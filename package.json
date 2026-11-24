@@ -1,0 +1,12 @@
+{
+  "name": "mathstore",
+  "version": "1.0.0",
+  "description": "Tienda de juegos y material didáctico de matemáticas",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/catalogo.test.mjs",
+    "portadas": "node tools/generar-portadas.mjs",
+    "pdfs": "node tools/generar-pdfs.mjs",
+    "start": "python -m http.server 8000"
+  }
+}
