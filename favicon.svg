@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Logo de MathStore: manzana roja con un gusano verde que se asoma por su agujero -->
+  <path d="M32 18c-4-4-12-5-17-1-7 5-7 17-3 26 3 7 8 13 14 13 3 0 4-2 6-2s3 2 6 2c6 0 11-6 14-13 4-9 4-21-3-26-5-4-13-3-17 1z" fill="#e5484d"/>
+  <path d="M20 22c-3 2-5 6-5 10" stroke="#ff8f93" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M32 18c0-5 1-9 4-12" stroke="#6b3e1f" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M35 11c4-5 11-6 15-3-3 5-10 7-15 3z" fill="#4caf50"/>
+  <ellipse cx="44" cy="37" rx="5.5" ry="5" fill="#7a1d22"/>
+  <path d="M44 38c2-7 9-9 13-5 3 3 1 8-3 8" stroke="#8fdc5a" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <circle cx="55.5" cy="34" r="1.6" fill="#14211d"/>
+</svg>

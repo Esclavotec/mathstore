@@ -2,13 +2,15 @@
 <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c2540"/><stop offset="1" stop-color="#0c1122"/></linearGradient></defs>
 <rect width="640" height="360" fill="url(#g)"/>
 <g stroke="#e8edf8" stroke-opacity="0.08" stroke-width="1"><path d="M0 0V360"/><path d="M32 0V360"/><path d="M64 0V360"/><path d="M96 0V360"/><path d="M128 0V360"/><path d="M160 0V360"/><path d="M192 0V360"/><path d="M224 0V360"/><path d="M256 0V360"/><path d="M288 0V360"/><path d="M320 0V360"/><path d="M352 0V360"/><path d="M384 0V360"/><path d="M416 0V360"/><path d="M448 0V360"/><path d="M480 0V360"/><path d="M512 0V360"/><path d="M544 0V360"/><path d="M576 0V360"/><path d="M608 0V360"/><path d="M640 0V360"/><path d="M0 0H640"/><path d="M0 32H640"/><path d="M0 64H640"/><path d="M0 96H640"/><path d="M0 128H640"/><path d="M0 160H640"/><path d="M0 192H640"/><path d="M0 224H640"/><path d="M0 256H640"/><path d="M0 288H640"/><path d="M0 320H640"/><path d="M0 352H640"/></g>
-<g stroke-linecap="round" fill="none">
-      <path d="M250 230H600" stroke="#e8edf8" stroke-width="10"/>
-      <path d="M250 230L470 50" stroke="#e8edf8" stroke-width="10"/>
-      <path d="M340 230A90 90 0 0 0 320 173" stroke="#f2cf5b" stroke-width="8"/>
-      <path d="M250 230L560 120" stroke="#8fdc9e" stroke-width="6" stroke-dasharray="16 12"/></g>
-      <text x="360" y="200" font-family="'Arial Black', 'Segoe UI Black', Impact, sans-serif" font-size="40" fill="#f2cf5b">39°</text>
-      <path d="M40 60l60 20-60 20 20-20z" fill="#ef8f9c"/>
+<circle cx="80" cy="60" r="26" fill="#f4f1e6" fill-opacity="0.9"/>
+      <path d="M150 240H560" stroke="#e8edf8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M350 240A200 200 0 0 0 150 240" fill="none" stroke="#e8edf8" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="6 12"/>
+      <path d="M350 240L240 120" stroke="#f2cf5b" stroke-width="5" stroke-dasharray="4 12" stroke-linecap="round"/>
+      <path d="M410 240A60 60 0 0 0 310 196" fill="none" stroke="#8fdc9e" stroke-width="5"/>
+      <text x="400" y="200" font-family="'Arial Black', 'Segoe UI Black', Impact, sans-serif" font-size="34" fill="#8fdc9e">135°</text>
+      <g transform="translate(240 112)"><circle r="34" fill="#f2cf5b" fill-opacity="0.18"/><rect x="-10" y="-24" width="20" height="6" fill="#2b1d14"/><rect x="-10" y="18" width="20" height="6" fill="#2b1d14"/><ellipse rx="17" ry="20" fill="#e5484d"/></g>
+      <g transform="translate(300 175) rotate(20)" fill="#cfd8dc"><path d="M0-5L18 0 0 5z"/><path d="M0-5L18 0 0 5z" transform="rotate(90)"/><path d="M0-5L18 0 0 5z" transform="rotate(180)"/><path d="M0-5L18 0 0 5z" transform="rotate(270)"/></g>
+      <g transform="translate(350 240)"><ellipse cy="-10" rx="18" ry="14" fill="#1a1a1a"/><circle cy="-36" r="16" fill="#1a1a1a"/><rect x="-16" y="-44" width="32" height="6" fill="#e5484d"/><path d="M-15-42l-16-8 2 13z" fill="#e5484d"/><rect x="-11" y="-38" width="22" height="7" fill="#f1c7a5"/><rect x="-7" y="-37" width="4" height="4" fill="#1a1a1a"/><rect x="3" y="-37" width="4" height="4" fill="#1a1a1a"/></g>
 <text x="32" y="302" font-family="'Arial Black', 'Segoe UI Black', Impact, sans-serif" font-size="44" fill="#e8edf8" letter-spacing="-1">ÁNGULO NINJA</text>
-<text x="34" y="332" font-family="Consolas, monospace" font-size="17" fill="#e8edf8" fill-opacity="0.75" letter-spacing="2">ESTIMA LOS GRADOS</text>
+<text x="34" y="332" font-family="Consolas, monospace" font-size="17" fill="#e8edf8" fill-opacity="0.75" letter-spacing="2">LANZA A 135°</text>
 </svg>

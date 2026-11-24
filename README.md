@@ -3,26 +3,37 @@
 **Página publicada:** <https://esclavotec.github.io/mathstore/> · **Repositorio:** <https://github.com/Esclavotec/mathstore>
 
 Tienda web al estilo de una tienda de videojuegos, pero para **juegos y material didáctico de matemáticas**.
-Cada recurso aparece como una tarjeta con **portada y nombre**. Al hacer clic se abre su **ficha** (descripción, tema, nivel, edad, duración y etiquetas) con un botón que cambia según el tipo:
+Cada recurso aparece como una tarjeta con **portada y nombre**. Al hacer clic se abre su **ficha** (descripción, tema, nivel, edad, duración, etiquetas y créditos) con un botón que cambia según el tipo:
 
 | Tipo | Botón | Qué hace |
 |---|---|---|
-| `jugar` | **Jugar** | Abre el juego dentro de la página (sin instalar nada) |
-| `descargar` | **Descargar** | Descarga el archivo (las fichas PDF de `material/`) |
+| `jugar` | **Jugar** | Abre el juego dentro de la tienda, sin instalar nada |
 | `web` | **Ir al sitio web** | Abre el sitio externo en una pestaña nueva |
+| `descargar` | **Descargar** | Descarga un archivo. Ahora mismo no se usa, pero el código lo admite |
 
-También tiene un carrusel de destacados, un buscador (no distingue tildes ni mayúsculas), filtros por tema, tipo y nivel, y enlaces directos a cada ficha (`index.html#angulo-ninja`).
+También tiene un carrusel de destacados, un buscador (no distingue tildes ni mayúsculas), filtros por tema, tipo y nivel, y enlaces directos a cada ficha (`index.html#angulo-ninja`). El logo es una manzana con un gusano.
 
-## Contenido incluido
+## Juegos incluidos
 
-- **3 juegos propios**:
-  - *Carrera de Tablas*: multiplicaciones contra el reloj, con rachas.
-  - *Fracción Exacta*: elegir la fracción mayor, con barras visuales.
-  - *Ángulo Ninja*: estimar ángulos en grados.
+| Juego | Tema | Cómo se juega |
+|---|---|---|
+| **La tiendita de los cuadriláteros** | Geometría | Compra solo paralelogramos, rectángulos o cuadrados, y acomoda la vitrina. Es un juego de Antony Arias, basado en «Bolsa de cuadriláteros» de José Pablo Calderón Gairaud (PROMATES) |
+| **Carrera de Tablas** | Multiplicación | Carrera contra un auto rival. Eliges qué tablas practicar, hay turbo con 3 aciertos seguidos, 3 carreras cada vez más rápidas y 3 vidas |
+| **Pizzería de Fracciones** | Fracciones | Sirves la fracción de pizza que pide cada cliente tocando las porciones. Los niveles 2 y 3 usan fracciones equivalentes. Hay barra de paciencia y propina |
+| **Ángulo Ninja** | Ángulos | Apuntas y lanzas una estrella a la linterna que está al ángulo pedido, sin transportador. El nivel 3 es de lanzamiento libre. Después de cada tiro se dibuja el ángulo real |
 
-  Todos tienen puntaje, temporizador y récord guardado en el navegador.
-- **2 fichas PDF**: sumas y restas con llevadas (3 páginas) y ecuaciones de primer grado. Las dos incluyen soluciones.
-- **3 enlaces**: GeoGebra, Khan Academy (en español) y PhET.
+Los tres juegos propios comparten un **kit** (`js/juegos/kit.js`) que aporta:
+- pantalla de inicio con instrucciones;
+- efectos de sonido generados en el navegador, con botón para silenciarlos;
+- textos flotantes ("+10"), confeti y avisos entre niveles;
+- pantalla final con 0 a 3 estrellas y récord guardado en el navegador.
+
+Se juegan con ratón, con el dedo en el celular o con el teclado:
+- *Carrera:* teclas 1–4 para responder.
+- *Pizzería:* Tab y Enter.
+- *Ninja:* flechas para apuntar y Enter para lanzar.
+
+Además hay 3 enlaces: GeoGebra, Khan Academy (en español) y PhET.
 
 ## Arquitectura
 
@@ -31,31 +42,39 @@ flowchart LR
   JSON[data/catalogo.json] --> L[js/catalogo.js]
   FB[(Firestore · opcional)] -.-> L
   L --> UI[js/app.js<br/>carrusel + filtros + rejilla]
-  LOG[js/logica.js<br/>funciones puras] --> UI
-  UI -->|clic en tarjeta| M[Modal de detalle]
-  M -->|tipo = jugar| G[js/juegos/*.js<br/>en el visor]
-  M -->|tipo = descargar| D[material/*.pdf]
-  M -->|tipo = web| W[sitio externo]
-  LOG --> G
+  UI -->|clic en tarjeta| M[Ficha de detalle]
+  M -->|jugar, juego propio| G[js/juegos/*.js<br/>+ kit.js]
+  M -->|jugar, juego HTML| IF[games/*/index.html<br/>en un marco]
+  M -->|web| W[sitio externo]
+  LOG[js/logica.js<br/>funciones puras + tests] --> G
+  LOG --> UI
+  style IF fill:#f2cf5b,color:#14211d
+  style G fill:#8fdc9e,color:#14211d
 ```
 
+En amarillo, lo nuevo de esta versión (juegos HTML completos). En verde, los juegos rehechos.
+
 ```
-index.html               página principal
-css/styles.css           estilos (tema "pizarra" oscuro)
-js/firebase-config.js    config de Firebase (null = usar JSON local)
-js/catalogo.js           carga el catálogo: Firestore o data/catalogo.json
-js/logica.js             lógica pura (generar ejercicios, puntuar, filtrar), probada con tests
-js/juegos/*.js           un archivo por juego
-js/app.js                interfaz de la tienda
-data/catalogo.json       la lista de recursos
-covers/*.svg             portadas (generadas con tools/generar-portadas.mjs)
-material/*.pdf           fichas (generadas con tools/generar-pdfs.mjs)
-tests/catalogo.test.mjs  tests automáticos
+index.html                       página principal
+favicon.svg                      logo (manzana con gusano)
+css/styles.css                   estilos (tema "pizarra" oscuro)
+js/firebase-config.js            config de Firebase (null = usar JSON local)
+js/catalogo.js                   carga el catálogo: Firestore o data/catalogo.json
+js/logica.js                     lógica pura (ejercicios, pedidos, ángulos, filtros), probada con tests
+js/juegos/kit.js                 piezas compartidas por los juegos
+js/juegos/carrera-tablas.js      \
+js/juegos/pizzeria-fracciones.js  > un archivo por juego propio
+js/juegos/angulo-ninja.js        /
+games/tiendita-cuadrilateros/    juego HTML completo (aportado)
+js/app.js                        interfaz de la tienda
+data/catalogo.json               la lista de recursos
+covers/                          portadas (SVG generadas con tools/generar-portadas.mjs + la imagen de la tiendita)
+tests/catalogo.test.mjs          tests automáticos
 ```
 
 ## Cómo usarlo
 
-Hace falta un servidor local porque la página lee `data/catalogo.json` con `fetch` (si abres `index.html` con doble clic, el catálogo no carga).
+Hace falta un servidor local porque la página lee `data/catalogo.json` con `fetch`. Si abres `index.html` con doble clic, el catálogo no carga.
 
 ```powershell
 python -m http.server 8000
@@ -75,22 +94,28 @@ Añade un objeto a `data/catalogo.json`:
 {
   "id": "mi-recurso",              // minúsculas, números y guiones; se usa en la URL (#mi-recurso)
   "titulo": "Mi recurso",
-  "portada": "covers/mi-recurso.svg",  // cualquier imagen 16:9 (svg, png, jpg)
+  "portada": "covers/mi-recurso.svg",  // cualquier imagen 16:9 (svg, png, jpg, webp)
   "descripcion": "Texto que se ve al abrir la ficha.",
   "tema": "Geometría",             // los filtros de tema salen de aquí automáticamente
   "nivel": "primaria",             // primaria | secundaria
-  "tipo": "web",                   // jugar | descargar | web
-  "url": "https://…",              // jugar → id del juego · descargar → ruta del archivo · web → enlace
+  "tipo": "jugar",                 // jugar | web | descargar
+  "url": "…",                      // ver abajo
   "etiquetas": ["…"],
   "edad": "8–12 años",             // opcional
   "duracion": "10 min",            // opcional
+  "autor": "Nombre",               // opcional: se muestra como «Créditos» en la ficha
   "destacado": false               // true = aparece en el carrusel
 }
 ```
 
-(Los comentarios `//` son solo explicativos: en el JSON real no se ponen.) Luego ejecuta `npm test`: avisa si falta un campo, la portada o el archivo.
+(Los comentarios `//` son solo explicativos: en el JSON real no se ponen.)
 
-**Para crear un juego nuevo**: crea `js/juegos/<id>.js` siguiendo el contrato documentado al inicio de `js/juegos/carrera-tablas.js` (`ctx.escenario`, `ctx.marcador`, `ctx.terminar`), añade su `<script>` en `index.html` y un recurso con `"tipo": "jugar"` y `"url": "<id>"`.
+Qué va en `url`:
+- **Juego HTML que ya tienes** (como la tiendita): cópialo en `games/<id>/index.html` y pon `"url": "games/<id>/index.html"`. Se abre en un marco dentro de la ficha, con un enlace de respaldo para abrirlo en otra pestaña.
+- **Juego propio con el kit:** crea `js/juegos/<id>.js` siguiendo el contrato documentado al inicio de `js/juegos/carrera-tablas.js` (`ctx.escenario`, `ctx.marcador`, `ctx.terminar(puntos, resumen, estrellas)`), añade su `<script>` en `index.html` y pon `"url": "<id>"`.
+- **Sitio web:** el enlace `https://…`.
+
+Después ejecuta `npm test`: avisa si falta un campo, la portada, el archivo del juego o su `<script>`.
 
 ## Firebase (opcional)
 
@@ -113,7 +138,7 @@ Si Firebase falla o la colección está vacía, la tienda usa automáticamente `
 
 ## Publicar en GitHub Pages
 
-La tienda ya está publicada: GitHub Pages sirve la rama `main` desde la raíz del repositorio. Para publicar cambios basta con subirlos; la página se actualiza sola en uno o dos minutos:
+La tienda ya está publicada: GitHub Pages sirve la rama `main` desde la raíz del repositorio. Para publicar cambios basta con subirlos, y la página se actualiza sola en uno o dos minutos:
 
 ```powershell
 git add .
@@ -121,21 +146,39 @@ git commit -m "Describe tu cambio"
 git push
 ```
 
-`.gitattributes` marca los PDF como binarios para que git no los dañe al convertir los saltos de línea en Windows.
-
 ## Pruebas realizadas
 
-- `npm test`: 9 tests en verde. Comprueban los campos del catálogo, que no haya ids repetidos, que existan las portadas, los juegos y los PDF (que deben ser PDF reales), que estén los tres tipos de botón, la lógica de los tres juegos (500 ejercicios generados por juego) y los filtros y el buscador.
-- Navegador:
-  - Cada tipo de botón muestra el texto y el enlace correctos.
-  - El buscador filtra («angulo» → 1 de 8).
-  - Se jugaron partidas completas de *Fracción Exacta* (con pantalla final y récord guardado), una ronda de *Ángulo Ninja* y una pregunta de *Carrera de Tablas*.
-  - En móvil (375 px) no hay desplazamiento horizontal.
+- **`npm test`: 12 tests en verde.**
+  - Catálogo: campos completos, ids únicos, portadas, juegos y `<script>` existentes, que no queden PDF, y la tiendita con sus créditos y su portada WebP.
+  - Lógica de los juegos, generando cientos de casos por juego:
+    - multiplicaciones con las tablas elegidas;
+    - rival más rápido en cada nivel y turbo;
+    - pedidos de pizza que siempre se pueden servir con porciones enteras, de 12 porciones como máximo, con más cortes en el nivel 2 y menos en el 3;
+    - linternas separadas, impactos y cálculo del ángulo.
+  - Búsqueda y filtros.
+- **Navegador, en computadora:**
+  - Carrera completa, incluida la carrera 2, hasta perder las 3 vidas y ver las estrellas finales.
+  - Nivel 1 completo de la Pizzería y entrada al nivel 2.
+  - Lanzamientos acertados y fallados en Ángulo Ninja, con el ángulo revelado.
+  - La tiendita carga dentro de la tienda y su primera actividad funciona.
+- **Navegador, en celular (375 px):** los 4 juegos y la tienda, sin desbordes horizontales.
 
-## Cambios en esta versión
+## Cambios
 
-- Publicada en GitHub (repositorio público `mathstore`) con GitHub Pages activado. Se añadió `.gitattributes` para proteger los PDF.
+### Versión 2
+- **Logo nuevo:** manzana con un gusano, también como icono de la pestaña.
+- **Se quitaron las fichas PDF:** carpeta `material/`, portadas, generador y filtro «Descargable». El tipo `descargar` sigue disponible en el código.
+- **Juegos rehechos:**
+  - *Carrera de Tablas:* carrera contra un rival, turbo, vidas, 3 niveles y selector de tablas.
+  - *Fracción Exacta* se reemplazó por la *Pizzería de Fracciones*.
+  - *Ángulo Ninja:* apuntar y lanzar a las linternas, más un nivel de lanzamiento libre.
+  - Los tres tienen pantalla de inicio, sonidos, estrellas y funcionan con el dedo.
+- **Nuevo juego:** *La tiendita de los cuadriláteros*, con soporte para juegos HTML completos dentro de la tienda.
+- **Fallos corregidos durante las pruebas:**
+  - La línea de meta de la carrera usaba la misma clase CSS que la fila de datos de las tarjetas y las desacomodaba. Ahora se llama `.linea-meta`.
+  - En celular, el globo del pedido de la pizzería desbordaba la pantalla.
+  - El nivel 2 podía generar pizzas de 16 porciones.
 
-- Primera versión: tienda, 3 juegos, 2 fichas PDF, 3 enlaces, Firebase opcional y tests.
-- Corrección durante las pruebas: al cerrar y reabrir el modal muy rápido, el evento `close` (que llega con retraso) borraba el juego recién abierto. Ahora se ignora si el modal ya está abierto otra vez.
-- Cambio respecto al plan: los juegos son archivos JS (`js/juegos/`) que se montan dentro del modal en vez de páginas HTML sueltas en `games/`. Así funcionan igual en GitHub Pages y en la vista publicada, donde no se pueden usar iframes.
+### Versión 1
+- Tienda, 3 juegos, 2 fichas PDF, 3 enlaces, Firebase opcional y tests.
+- Se publicó en GitHub Pages y se añadió `.gitattributes` para proteger los archivos binarios.

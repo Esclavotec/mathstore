@@ -93,7 +93,9 @@
     var temas = [];
     recursos.forEach(function (r) { if (temas.indexOf(r.tema) === -1) temas.push(r.tema); });
     pintarChips($("#filtro-tema"), "tema", temas.sort(), function (v) { return v; });
-    pintarChips($("#filtro-tipo"), "tipo", Object.keys(TIPOS), function (v) { return TIPOS[v].insignia; });
+    // Solo se ofrecen los tipos que de verdad hay en el catálogo (p. ej. sin "Descargable" si no hay archivos)
+    var tipos = Object.keys(TIPOS).filter(function (t) { return recursos.some(function (r) { return r.tipo === t; }); });
+    pintarChips($("#filtro-tipo"), "tipo", tipos, function (v) { return TIPOS[v].insignia; });
   }
 
   /* ---------- Rejilla ---------- */
@@ -121,8 +123,10 @@
     var r = buscar(id);
     if (!r) return;
     pararJuego();
+    modal.classList.remove("modal-juego", "modal-marco");
     var aviso = r.tipo === "web" ? "Se abre en una pestaña nueva: " + esc(String(r.url).replace(/^https?:\/\//, "").split("/")[0])
-      : r.tipo === "descargar" ? "Archivo PDF para imprimir." : "Se juega aquí mismo, sin instalar nada.";
+      : r.tipo === "descargar" ? "Archivo para descargar." : "Se juega aquí mismo, sin instalar nada.";
+    if (r.autor) aviso += "<br>Créditos: " + esc(r.autor);
     var record = r.tipo === "jugar" && leerRecord(r.id) ? " · Tu récord: <b>" + leerRecord(r.id) + "</b> puntos" : "";
     cuerpo.innerHTML =
       '<img class="detalle-portada" src="' + esc(r.portada) + '" alt="Portada de ' + esc(r.titulo) + '">' +
@@ -147,39 +151,65 @@
 
   function pararJuego() { if (limpiarJuego) { limpiarJuego(); limpiarJuego = null; } }
 
+  /** ¿El recurso es un juego HTML completo (p. ej. games/tiendita-cuadrilateros/index.html)? */
+  function esJuegoHTML(r) { return /\.html?$/i.test(String(r.url)); }
+
+  function cabeceraVisor(r, conSonido) {
+    var son = window.MathKit && window.MathKit.sonido.on;
+    return '<div class="visor-cabecera">' +
+      '<button type="button" class="boton boton-secundario" data-abrir="' + esc(r.id) + '">‹ Volver</button>' +
+      '<h2 id="modal-titulo">' + esc(r.titulo) + "</h2>" +
+      '<div class="marcador" id="marcador"></div>' +
+      (conSonido ? '<button type="button" class="boton boton-secundario boton-sonido" id="boton-sonido" aria-pressed="' + son + '">Sonido: ' + (son ? "sí" : "no") + "</button>" : "") +
+      "</div>";
+  }
+
+  /** Juegos HTML completos: se cargan en un marco que ocupa el visor. */
+  function jugarHTML(r) {
+    pararJuego();
+    modal.classList.add("modal-juego", "modal-marco");
+    cuerpo.innerHTML = '<div class="visor visor-marco">' + cabeceraVisor(r, false) +
+      '<iframe class="marco-juego" src="' + esc(r.url) + '" title="' + esc(r.titulo) + '" allow="autoplay; fullscreen"></iframe>' +
+      '<p class="aviso">¿No carga? <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Abrir el juego en una pestaña nueva</a>.</p>' +
+      "</div>";
+    if (!modal.open) modal.showModal();
+  }
+
   /** Abre el visor y monta el juego con el contrato descrito en js/juegos/carrera-tablas.js. */
   function jugar(id) {
     var r = buscar(id);
+    if (r && esJuegoHTML(r)) return jugarHTML(r);
     var juego = r && window.MathJuegos && window.MathJuegos[r.url];
     if (!juego) { alertaEnModal("Este juego no está disponible."); return; }
     pararJuego();
-    cuerpo.innerHTML =
-      '<div class="visor">' +
-        '<div class="visor-cabecera">' +
-          '<button type="button" class="boton boton-secundario" data-abrir="' + esc(r.id) + '">‹ Volver</button>' +
-          '<h2 id="modal-titulo">' + esc(r.titulo) + "</h2>" +
-          '<div class="marcador" id="marcador"></div>' +
-        "</div>" +
-        '<div class="escenario" id="escenario"></div>' +
-      "</div>";
+    modal.classList.add("modal-juego");
+    modal.classList.remove("modal-marco");
+    cuerpo.innerHTML = '<div class="visor">' + cabeceraVisor(r, true) + '<div class="escenario" id="escenario"></div></div>';
     if (!modal.open) modal.showModal();
+    modal.scrollTop = 0;
     var escenario = $("#escenario");
     limpiarJuego = juego({
       escenario: escenario,
       marcador: function (obj) {
         $("#marcador").innerHTML = Object.keys(obj).map(function (k) { return "<span>" + esc(k) + " <b>" + esc(obj[k]) + "</b></span>"; }).join("");
       },
-      terminar: function (puntos, resumen) {
+      terminar: function (puntos, resumen, estrellas) {
         pararJuego();
         var anterior = leerRecord(r.id), nuevo = puntos > anterior;
         if (nuevo) guardarRecord(r.id, puntos);
+        estrellas = Math.max(0, Math.min(3, estrellas || 0));
+        $("#marcador").innerHTML = "";
         escenario.innerHTML =
           '<div class="resultado">' +
-            "<h3>" + (nuevo ? "¡Nuevo récord!" : "¡Terminado!") + "</h3>" +
-            '<p class="pregunta" style="margin:0">' + puntos + ' <span style="font-size:1rem">puntos</span></p>' +
+            '<p class="estrellas-fin" aria-label="' + estrellas + ' de 3 estrellas">' +
+              [0, 1, 2].map(function (i) { return '<span class="' + (i < estrellas ? "llena" : "") + '" style="--i:' + i + '">★</span>'; }).join("") +
+            "</p>" +
+            "<h3>" + (nuevo ? "¡Nuevo récord!" : estrellas === 3 ? "¡Perfecto!" : "¡Buen intento!") + "</h3>" +
+            '<p class="puntos-fin">' + puntos + " <span>puntos</span></p>" +
             "<p>" + esc(resumen) + (anterior && !nuevo ? " Tu récord es " + anterior + "." : "") + "</p>" +
-            '<button type="button" class="boton boton-principal" data-jugar="' + esc(r.id) + '">Jugar otra vez</button>' +
+            '<button type="button" class="boton boton-principal boton-grande" data-jugar="' + esc(r.id) + '">Jugar otra vez</button>' +
           "</div>";
+        if (estrellas === 3 && window.MathKit) window.MathKit.confeti(escenario);
       }
     });
   }
@@ -192,6 +222,7 @@
     if (modal.open) return;
     pararJuego();
     cuerpo.innerHTML = "";
+    modal.classList.remove("modal-juego", "modal-marco");
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   });
   // clic fuera del contenido (en el fondo) cierra
@@ -202,6 +233,11 @@
   document.addEventListener("click", function (e) {
     var el;
     if ((el = e.target.closest("[data-jugar]"))) { jugar(el.dataset.jugar); return; }
+    if ((el = e.target.closest("#boton-sonido"))) {
+      var on = window.MathKit.sonido.alternar();
+      el.setAttribute("aria-pressed", on); el.textContent = "Sonido: " + (on ? "sí" : "no");
+      return;
+    }
     if ((el = e.target.closest("[data-abrir]"))) { abrirDetalle(el.dataset.abrir); return; }
     if ((el = e.target.closest("[data-punto]"))) { indiceDestacado = +el.dataset.punto; pintarDestacado(); return; }
     if ((el = e.target.closest(".chip"))) {

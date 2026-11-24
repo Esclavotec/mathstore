@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiendita de cuadriláteros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: amable y escolar, frases cortas para estudiantes de secundaria.
+   IDEA: una tiendita escolar con toldo; el estudiante compra figuras y recibe un ticket que explica cada error.
+   PICTURE: el estante de figuras con etiquetas de precio y la bolsa de papel kraft; en la ronda 4, el diagrama de inclusión.
+   COLOUR and TYPE: hoja de cuaderno cuadriculado, toldo verde azulado, kraft, etiqueta amarilla; Baloo 2 + Nunito.
+   LAYOUT: toldo, pasos de ronda, estante + bolsa lado a lado (apilados en celular), ticket debajo. */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbfdff,#132030);--grid:light-dark(#dfeaf6,#1d2f45);--ink:light-dark(#1d2733,#e8eef5);--soft:light-dark(#5a6878,#a9b7c6);
+--paper:light-dark(#ffffff,#1b2b3f);--line:light-dark(#cfdbe8,#2f4560);--teal:light-dark(#0b7a75,#3cbab2);--teal2:light-dark(#e3f4f2,#163a3c);
+--kraft:light-dark(#c99b6a,#8a6542);--kraft2:light-dark(#b5854f,#6f4f31);--tag:#ffd23f;--ok:light-dark(#1f8a4c,#4fd08a);--bad:light-dark(#c93c3c,#ff7b7b);--miss:light-dark(#b7791f,#f6c35b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;color:var(--ink);font:16px/1.55 Nunito,"Segoe UI",system-ui,sans-serif;overflow-x:clip;
+background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.05;text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.awning{height:46px;background:repeating-linear-gradient(90deg,var(--teal) 0 48px,#fff 48px 96px);
+-webkit-mask:radial-gradient(24px 14px at 24px 32px,#000 98%,transparent) 0 0/48px 46px repeat-x,linear-gradient(#000 0 32px,transparent 0);mask:radial-gradient(24px 14px at 24px 32px,#000 98%,transparent) 0 0/48px 46px repeat-x,linear-gradient(#000 0 32px,transparent 0)}
+header{padding:14px max(5vw,16px) 6px;max-width:1240px;margin:auto;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between}
+header h1{font-size:clamp(32px,5vw,46px);color:var(--teal)}
+header p{margin:4px 0 0;color:var(--soft)}
+.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:44px;padding:8px 16px;border-radius:12px;border:2px solid var(--line);background:var(--paper);font-weight:800;cursor:pointer}
+.btn:hover{border-color:var(--teal)}
+.btn[aria-pressed=true]{background:var(--teal2);border-color:var(--teal)}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.steps{max-width:1240px;margin:8px auto 0;padding:0 max(5vw,16px);display:flex;gap:8px;overflow-x:auto}
+.step{flex:none;display:flex;gap:8px;align-items:center;min-height:44px;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper);font-weight:700;cursor:pointer}
+.step b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--grid);font-size:14px}
+.step.on{border-color:var(--teal);color:var(--teal)}.step.on b{background:var(--teal);color:#fff}
+.step:disabled{opacity:.45;cursor:not-allowed}
+.step .st{color:#e0a800;letter-spacing:1px}
+main{max-width:1240px;margin:auto;padding:18px max(5vw,16px) 28px}
+.goal{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin-bottom:14px}
+.goal h2{font-size:clamp(28px,4vw,38px)}.goal p{margin:0;color:var(--soft);max-width:68ch}
+.store{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+.shelfbox{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 14px 4px}
+.shelfbox h3,.bag h3{font-size:20px;margin-bottom:8px}
+.items{display:flex;flex-wrap:wrap;gap:12px;min-height:150px;padding-bottom:12px;align-content:flex-start}
+#shelf{border-bottom:10px solid var(--teal);border-radius:0 0 4px 4px;margin-bottom:10px}
+.card{position:relative;width:120px;padding:8px 8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--paper);cursor:grab;touch-action:none;user-select:none;display:grid;justify-items:center;gap:2px}
+.card svg{width:100px;height:100px;display:block;pointer-events:none}
+.card .tag{background:var(--tag);color:#3a2c00;font-weight:800;font-size:14px;padding:1px 10px 1px 14px;border-radius:4px 10px 10px 4px;position:relative;white-space:nowrap}
+.card .tag::before{content:"";position:absolute;left:4px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--paper)}
+.card .nm{font-size:13px;font-weight:700;color:var(--soft);min-height:1.2em}
+.card.sel{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal2)}
+.card.ok{border-color:var(--ok)}.card.bad{border-color:var(--bad);border-style:dashed}.card.miss{border-color:var(--miss);border-style:dashed}
+.card .mk{position:absolute;top:-10px;right:-8px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px}
+.card.ok .mk{background:var(--ok)}.card.bad .mk{background:var(--bad)}.card.miss .mk{background:var(--miss)}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%) rotate(-4deg);box-shadow:0 12px 24px rgba(0,0,0,.18)}
+.bag{position:relative;background:linear-gradient(var(--kraft),var(--kraft2));border-radius:6px 6px 18px 18px;padding:46px 14px 8px;color:#2b1a08;min-height:300px;cursor:pointer}
+.bag::before,.bag::after{content:"";position:absolute;top:-22px;width:56px;height:44px;border:6px solid var(--kraft2);border-bottom:0;border-radius:30px 30px 0 0}
+.bag::before{left:22%}.bag::after{right:22%}
+.bag h3{color:#2b1a08}.bag .hint{font-size:14px;margin:0 0 8px;opacity:.85}
+.bag .items{min-height:200px;border:2px dashed rgba(43,26,8,.35);border-radius:12px;padding:10px;justify-content:center}
+.bag.over,.zone.over{outline:4px solid var(--tag);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.ticket{margin-top:22px;max-width:560px;background:var(--paper);border:2px solid var(--line);border-radius:6px;padding:18px 20px 22px;position:relative;
+-webkit-mask:radial-gradient(8px at 8px 100%,transparent 98%,#000) -8px 0/16px 100% repeat-x;mask:radial-gradient(8px at 8px 100%,transparent 98%,#000) -8px 0/16px 100% repeat-x}
+.ticket h3{font-size:24px}.ticket .sub{color:var(--soft);font-size:14px;margin:2px 0 10px}
+.ticket table{width:100%;border-collapse:collapse;font-size:15px}
+.ticket td{padding:5px 0;border-bottom:1px dashed var(--line)}.ticket td.n{text-align:right;white-space:nowrap}
+.ticket .tot td{font-weight:800;border-bottom:0;padding-top:10px}
+.ticket ul{padding-left:20px;margin:12px 0 0}.ticket li{margin:6px 0}
+.ticket .ok{color:var(--ok);font-weight:800}.ticket .bad{color:var(--bad);font-weight:800}.ticket .miss{color:var(--miss);font-weight:800}
+.big{font-family:"Baloo 2",sans-serif;font-size:30px;color:var(--teal)}
+.stars{color:#e0a800;font-size:28px;letter-spacing:4px}
+.venn .zone{border:2px solid var(--line);border-radius:22px;padding:10px 12px 12px;background:var(--paper);cursor:pointer}
+.venn .zone .zl{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:18px}
+.venn .zone .items{min-height:60px;padding-bottom:6px}
+.z1{background:light-dark(#eef6ff,#1c3150)!important;border-color:#5b8def!important}
+.z2{background:light-dark(#eefaf3,#1a3a2c)!important;border-color:#27ae60!important}
+.z3{background:light-dark(#fff8e0,#3d3417)!important;border-color:#e0a800!important}
+dialog{max-width:min(680px,94vw);border:2px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);padding:22px}
+dialog::backdrop{background:rgba(10,20,30,.45)}
+dialog h2{font-size:32px;color:var(--teal);margin-bottom:10px}
+dialog dl{margin:0}dialog dt{font-weight:800;margin-top:10px}dialog dd{margin:2px 0 0}
+.fig{position:relative;min-height:240px;margin:14px 0}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+footer{max-width:1240px;margin:auto;padding:18px max(5vw,16px) 30px;color:var(--soft);font-size:14px;border-top:2px solid var(--line)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.store.v{grid-template-columns:minmax(0,1fr)}.store.v .items{min-height:90px}
+@media(max-width:760px){.store{grid-template-columns:minmax(0,1fr)}.items{gap:8px}.card{width:94px;padding:6px 4px 4px}.card svg{width:76px;height:76px}.card .tag{font-size:13px}}
+@media(prefers-reduced-motion:no-preference){.card{transition:transform .15s}.card:active{transform:scale(.97)}.ticket{animation:pr .45s ease-out}@keyframes pr{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}}
+.brand{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:22px;color:var(--teal);align-self:center}
+header{align-items:center!important;padding-bottom:10px!important}
+.count{margin:0 0 2px;font-weight:800;color:var(--teal)}
+.empty{color:var(--soft)}
+.locked .card{cursor:not-allowed;opacity:.75}
+.ticket .msg{font-size:18px;font-weight:700;margin:4px 0 10px}
+.ticket .tip{background:var(--teal2);border-radius:10px;padding:10px 12px;margin:12px 0 0}
+.ticket.ok h3{color:var(--ok)}
+.res{width:100%;font-size:17px}.res .stars{text-align:right;font-size:22px}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:center;min-height:min(70vh,560px)}
+.sign h1{font-size:clamp(40px,6vw,64px);color:var(--teal)}
+.sign p{font-size:18px;max-width:52ch;color:var(--soft)}
+.acts{padding-left:22px;margin:8px 0 22px;font-weight:700;font-size:17px}.acts li{margin:4px 0}
+.btn.big{min-height:56px;padding:12px 40px;font-size:20px;border-radius:16px}
+.window{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:22px 18px 0;overflow:hidden}
+.rack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 10px}
+.prod{display:grid;justify-items:center;gap:4px;padding-bottom:10px;border-bottom:10px solid var(--teal)}
+.prod svg{width:100%;max-width:110px;aspect-ratio:1}
+.prod .tag{background:var(--tag);color:#3a2c00;font-weight:800;font-size:14px;padding:1px 10px;border-radius:4px 10px 10px 4px}
+@media(max-width:760px){.hero{grid-template-columns:minmax(0,1fr);min-height:0}.brand{font-size:19px}.tools .btn{padding:6px 10px;font-size:14px}}
+@media(prefers-reduced-motion:no-preference){.prod:nth-child(odd) svg{animation:sw 4s ease-in-out infinite alternate}@keyframes sw{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.chip{font-weight:800;padding:6px 14px;border-radius:999px;font-size:15px}.chip.dark{background:var(--ink);color:var(--bg)}.chip.yel{background:var(--tag);color:#3a2c00}
+.logo{font-size:clamp(58px,9vw,118px)!important;line-height:.9!important;color:var(--teal);text-shadow:0 6px 0 light-dark(#064e4b,#0a3f3c);letter-spacing:-1px}
+.ribbon{display:inline-block;margin:14px 0 0!important;background:var(--tag);color:#1d2733!important;border:5px solid #1d2733;border-radius:12px 32px 32px 12px;padding:2px 30px 6px 24px;transform:rotate(-2deg);box-shadow:0 6px 0 #1d2733;font:800 clamp(30px,4.6vw,54px)/1.05 "Baloo 2",sans-serif!important;max-width:none!important}
+.lv{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 4px}.lv span{font-weight:800;font-size:17px;padding:5px 14px;border-radius:12px;border:3px solid}
+.l1{background:light-dark(#eef6ff,#1c3150);border-color:#5b8def;color:light-dark(#1d3f8a,#cfe0ff)}.l2{background:light-dark(#eefaf3,#1a3a2c);border-color:#27ae60;color:light-dark(#14532d,#c9f2da)}.l3{background:light-dark(#fff8e0,#3d3417);border-color:#e0a800;color:light-dark(#5c4400,#ffe7a3)}
+.lead{font-size:18px}.scene svg{width:100%;height:auto;display:block;max-width:620px;margin-inline:auto}
+</style>
+</head>
+<body>
+<div class="awning" aria-hidden="true"></div>
+<header>
+  <div class="brand">La tiendita de los cuadriláteros</div>
+  <div class="tools">
+    <button class="btn" id="bMenu" hidden>Menú</button>
+    <button class="btn" id="bLupa" aria-pressed="false">Lupa</button>
+    <button class="btn" id="bTeo">Teoría</button>
+    <button class="btn" id="bMus" aria-pressed="true">Música: sí</button>
+    <button class="btn" id="bFx" aria-pressed="true">Efectos: sí</button>
+  </div>
+</header>
+<main id="app"></main>
+<div class="sr" aria-live="polite" id="live"></div>
+<dialog id="dTeo">
+  <h2>Repasemos</h2>
+  <dl>
+    <dt>Cuadrilátero</dt><dd>Figura plana de cuatro lados.</dd>
+    <dt>Paralelogramo</dt><dd>Cuadrilátero cuyos dos pares de lados opuestos son paralelos. El rombo y el romboide son paralelogramos.</dd>
+    <dt>Rectángulo</dt><dd>Paralelogramo cuyos cuatro ángulos internos miden 90°.</dd>
+    <dt>Cuadrado</dt><dd>Rectángulo con sus cuatro lados de igual medida. También es un rombo.</dd>
+    <dt>Trapecio y trapezoide</dt><dd>El trapecio tiene solo un par de lados paralelos; el trapezoide no tiene ninguno. Ninguno de los dos es paralelogramo.</dd>
+  </dl>
+  <div class="fig"><svg id="vennTeo" viewBox="0 0 600 240" role="img" aria-label="Diagrama: los cuadrados están dentro de los rectángulos, que están dentro de los paralelogramos, que están dentro de los cuadriláteros"></svg></div>
+  <p>Con la <b>Lupa</b> verás flechas en los lados paralelos, rayitas en los lados iguales y un cuadrito en los ángulos rectos.</p>
+  <button type="button" class="btn main" id="bCerrar">Volver a la tienda</button>
+</dialog>
+<footer>Basado en la actividad «Bolsa de cuadriláteros» de José Pablo Calderón Gairaud (PROMATES) en GeoGebra. Realizado por Antony Arias.</footer>
+<script>
+{
+/*LOGIC-START*/
+const TOL=0.02, deg=Math.PI/180;
+const R=(a,b)=>a+Math.random()*(b-a);
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]];
+const len=v=>Math.hypot(v[0],v[1]);
+function props(P){
+  const S=P.map((p,i)=>sub(P[(i+1)%4],p)), L=S.map(len);
+  const sinB=(u,v)=>Math.abs(u[0]*v[1]-u[1]*v[0])/(len(u)*len(v));
+  const par=[sinB(S[0],S[2])<TOL,sinB(S[1],S[3])<TOL], pairs=par.filter(Boolean).length;
+  const right=P.map((p,i)=>{const u=S[(i+3)%4],v=S[i];return Math.abs(u[0]*v[0]+u[1]*v[1])/(len(u)*len(v))<TOL});
+  const nRight=right.filter(Boolean).length;
+  const eq=(a,b)=>Math.abs(a-b)/Math.max(a,b)<TOL, allEq=L.every(l=>eq(l,L[0]));
+  let name;
+  if(pairs===2) name=nRight===4?(allEq?'cuadrado':'rectángulo'):(allEq?'rombo':'romboide');
+  else if(pairs===1) name=nRight>=2?'trapecio rectángulo':(par[0]?eq(L[1],L[3]):eq(L[0],L[2]))?'trapecio isósceles':'trapecio';
+  else name=((eq(L[0],L[1])&&eq(L[2],L[3]))||(eq(L[1],L[2])&&eq(L[3],L[0])))?'cometa':'trapezoide';
+  const level=pairs<2?0:nRight<4?1:allEq?3:2;
+  return {L,par,pairs,right,nRight,allEq,name,level,eq};
+}
+function convex(P){let s=0;for(let i=0;i<4;i++){const a=sub(P[(i+1)%4],P[i]),b=sub(P[(i+2)%4],P[(i+1)%4]);const c=Math.sign(a[0]*b[1]-a[1]*b[0]);if(!s)s=c;else if(c!==s)return false}return true}
+const rh=(a,t)=>[[0,0],[a,0],[a+a*Math.cos(t),a*Math.sin(t)],[a*Math.cos(t),a*Math.sin(t)]];
+const G={
+  cuadrado:()=>{const s=R(60,90);return[[0,0],[s,0],[s,s],[0,s]]},
+  cuadradoGirado:()=>{const s=R(60,80);return[[0,0],[s,0],[s,s],[0,s]]},
+  rectangulo:()=>{const w=R(85,110),h=w*R(.4,.62);return[[0,0],[w,0],[w,h],[0,h]]},
+  rectCasiCuadrado:()=>{const s=R(60,78),w=s*R(1.2,1.28);return[[0,0],[w,0],[w,s],[0,s]]},
+  rombo:()=>rh(R(55,75),R(50,66)*deg),
+  romboCasiCuadrado:()=>rh(R(60,75),R(76,82)*deg),
+  romboide:()=>{const a=R(75,95),b=a*R(.5,.68),t=R(55,70)*deg;return[[0,0],[a,0],[a+b*Math.cos(t),b*Math.sin(t)],[b*Math.cos(t),b*Math.sin(t)]]},
+  trapIsosceles:()=>{const B=R(90,110),b=B*R(.45,.62),h=R(40,60);return[[0,0],[B,0],[(B+b)/2,h],[(B-b)/2,h]]},
+  trapRectangulo:()=>{const B=R(85,105),b=B*R(.5,.68),h=R(45,65);return[[0,0],[B,0],[b,h],[0,h]]},
+  trapCasiParal:()=>{const b=R(80,86),h=R(45,55),o=R(22,30);return[[0,0],[100,0],[o+b,h],[o,h]]},
+  cometa:()=>{const p=R(30,40),q=R(18,26),L=R(88,100);return[[0,0],[p,q],[0,L],[-p,q]]},
+  trapezoide:()=>{for(;;){const P=[[0,0],[R(70,100),R(-12,12)],[R(60,100),R(55,85)],[R(-15,15),R(45,80)]],k=props(P);
+    if(convex(P)&&k.name==='trapezoide'&&!k.right.some(Boolean)&&P.every((p,i)=>{const u=sub(P[(i+3)%4],p),v=sub(P[(i+1)%4],p);return Math.abs(u[0]*v[0]+u[1]*v[1])/(len(u)*len(v))>.12}))return P}}
+};
+const ROUNDS=[
+  {t:1,goal:'paralelogramos',title:'Compra paralelogramos',ok:['cuadrado','cuadradoGirado','rectangulo','rectCasiCuadrado','rombo','romboCasiCuadrado','romboide','romboide'],bad:['trapIsosceles','trapRectangulo','trapCasiParal','cometa','trapezoide'],nOk:[2,5],nBad:[2,4],
+   hint:'Recuerda: un paralelogramo tiene sus dos pares de lados opuestos paralelos. Usa la lupa y busca las flechas en los cuatro lados.'},
+  {t:2,goal:'rectángulos',title:'Compra rectángulos',ok:['rectangulo','rectangulo','rectCasiCuadrado','cuadrado','cuadradoGirado'],bad:['rombo','romboide','romboCasiCuadrado','trapRectangulo','trapIsosceles'],nOk:[2,4],nBad:[2,4],
+   hint:'Recuerda: un rectángulo necesita cuatro ángulos rectos. Y todo cuadrado también es rectángulo.'},
+  {t:3,goal:'cuadrados',title:'Compra cuadrados',ok:['cuadrado','cuadradoGirado'],bad:['rectCasiCuadrado','romboCasiCuadrado','rectangulo','rombo','cometa'],nOk:[2,4],nBad:[2,4],
+   hint:'Recuerda: un cuadrado necesita cuatro ángulos rectos y cuatro lados iguales. Un cuadrado girado sigue siendo cuadrado.'},
+  {t:0,venn:true,title:'Acomoda la vitrina',levels:[['trapIsosceles','trapRectangulo','trapCasiParal','cometa','trapezoide'],['rombo','romboCasiCuadrado','romboide'],['rectangulo','rectCasiCuadrado'],['cuadrado','cuadradoGirado']],nExtra:[2,3],
+   hint:'Recuerda: cada figura va en la zona más interna que cumpla. Un cuadrado va en «Cuadrados», aunque también sea rectángulo y paralelogramo.'}
+];
+const LEVEL=['cuadriláteros','paralelogramos','rectángulos','cuadrados'];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const RI=([a,b])=>a+(Math.random()*(b-a+1)|0);
+const pick=a=>a[Math.random()*a.length|0];
+let uid=0;
+function makeFig(kind){
+  const rot=(kind==='cuadradoGirado'?45+R(-4,4):R(-35,35))*deg, c=Math.cos(rot), s=Math.sin(rot);
+  const P=G[kind]().map(([x,y])=>[x*c-y*s,x*s+y*c]);
+  return {id:'f'+(++uid),kind,P,...props(P),price:Math.round(R(150,950)/50)*50,size:R(.72,1),color:(Math.random()*7)|0};
+}
+function makeRound(i){
+  const r=ROUNDS[i];
+  if(r.venn){const k=r.levels.map(pick),all=r.levels.flat();for(let n=RI(r.nExtra);n--;)k.push(pick(all));return shuffle(k.map(makeFig))}
+  const k=[];for(let n=RI(r.nOk);n--;)k.push(pick(r.ok));for(let n=RI(r.nBad);n--;)k.push(pick(r.bad));
+  return shuffle(k.map(makeFig));
+}
+const pl=(n,s,p)=>n+' '+(n===1?s:p);
+// Revisa sin decir cuál figura está bien o mal: solo cuenta.
+function grade(i,figs,where,attempts){
+  const r=ROUNDS[i];let c,perfect,msg;
+  if(r.venn){
+    c={bien:0,mal:0,sin:0};
+    figs.forEach(f=>{const w=where[f.id];if(w==='shelf')c.sin++;else if(+w.slice(1)===f.level)c.bien++;else c.mal++});
+    perfect=!c.mal&&!c.sin;
+    msg=perfect?'¡Todas las figuras están en su lugar!':(!c.bien&&!c.mal)?'La vitrina está vacía. Acomoda las figuras y vuelve a revisar.':`Hay ${pl(c.bien,'figura bien ubicada','figuras bien ubicadas')} y ${pl(c.mal,'mal ubicada','mal ubicadas')}${c.sin?`, y ${c.sin===1?'falta 1 figura':`faltan ${c.sin} figuras`} por acomodar`:''}. Reinicia la vitrina y vuelve a intentar.`;
+  }else{
+    c={buenas:0,malas:0,faltan:0};
+    figs.forEach(f=>{const inBag=where[f.id]==='bag',ok=f.level>=r.t;if(inBag&&ok)c.buenas++;else if(inBag)c.malas++;else if(ok)c.faltan++});
+    perfect=!c.malas&&!c.faltan;
+    msg=perfect?`¡Compraste todos los ${r.goal} y ninguna figura de más!`
+      :(!c.buenas&&!c.malas)?`La bolsa está vacía. Echa los ${r.goal} y vuelve a revisar.`
+      :`Hay ${pl(c.buenas,'buena','buenas')} y ${pl(c.malas,'mala','malas')}${c.faltan?`, y todavía faltan ${r.goal}`:''}. Reinicia la compra y vuelve a intentar.`;
+  }
+  return {c,perfect,msg,hint:!perfect&&attempts>=3?r.hint:''};
+}
+/*LOGIC-END*/
+
+if(typeof document!=='undefined'){
+const $=s=>document.querySelector(s), app=$('#app');
+const FILL=['#5b8def','#f2994a','#9b51e0','#2fae6a','#e8615a','#2d9cdb','#e8b923'];
+// screen: 'menu' | 'play' | 'end'. Las actividades van en orden: solo se avanza al completar la anterior.
+const S={screen:'menu',round:0,stars:[0,0,0,0],lupa:false,music:true,fx:true,sel:null,result:null,attempts:0,locked:false};
+let figs=[],where={};
+
+function figSVG(f){
+  const xs=f.P.map(p=>p[0]),ys=f.P.map(p=>p[1]),w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);
+  const k=76*f.size/Math.max(w,h),cx=(Math.max(...xs)+Math.min(...xs))/2,cy=(Math.max(...ys)+Math.min(...ys))/2;
+  const Q=f.P.map(([x,y])=>[50+(x-cx)*k,50+(y-cy)*k]), pt=p=>p.map(n=>n.toFixed(1)).join(',');
+  let m='';
+  if(S.lupa){
+    const at=(i,t)=>{const a=Q[i],b=Q[(i+1)%4];return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]};
+    const dir=i=>{const v=sub(Q[(i+1)%4],Q[i]),l=len(v);return[v[0]/l,v[1]/l]};
+    f.par.forEach((p,k2)=>{if(!p)return;const d0=dir(k2);[k2,k2+2].forEach(i=>{let d=dir(i);if(d[0]*d0[0]+d[1]*d0[1]<0)d=[-d[0],-d[1]];
+      for(let n=0;n<=k2;n++){const c=at(i,.38),o=[c[0]+d[0]*n*5,c[1]+d[1]*n*5],nx=[-d[1],d[0]];
+        m+=`<path d="M${pt([o[0]-d[0]*4+nx[0]*4,o[1]-d[1]*4+nx[1]*4])}L${pt(o)}L${pt([o[0]-d[0]*4-nx[0]*4,o[1]-d[1]*4-nx[1]*4])}" fill="none" stroke="currentColor" stroke-width="2"/>`}})});
+    const groups=[];f.L.forEach((l,i)=>{const g=groups.find(g=>f.eq(f.L[g[0]],l));g?g.push(i):groups.push([i])});
+    groups.filter(g=>g.length>1).forEach((g,gi)=>g.forEach(i=>{const d=dir(i),nx=[-d[1],d[0]];for(let n=0;n<=gi;n++){const c=at(i,.66),o=[c[0]+d[0]*(n*4-gi*2),c[1]+d[1]*(n*4-gi*2)];
+      m+=`<line x1="${(o[0]-nx[0]*5).toFixed(1)}" y1="${(o[1]-nx[1]*5).toFixed(1)}" x2="${(o[0]+nx[0]*5).toFixed(1)}" y2="${(o[1]+nx[1]*5).toFixed(1)}" stroke="currentColor" stroke-width="2"/>`}}));
+    f.right.forEach((r,i)=>{if(!r)return;const v=Q[i],a=dir(i),b0=sub(Q[(i+3)%4],v),bl=len(b0),b=[b0[0]/bl,b0[1]/bl],s=7;
+      m+=`<path d="M${pt([v[0]+a[0]*s,v[1]+a[1]*s])}L${pt([v[0]+a[0]*s+b[0]*s,v[1]+a[1]*s+b[1]*s])}L${pt([v[0]+b[0]*s,v[1]+b[1]*s])}" fill="none" stroke="currentColor" stroke-width="1.8"/>`});
+  }
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="${Q.map(pt).join(' ')}" fill="${FILL[f.color]}" fill-opacity=".85" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><g style="color:var(--ink)">${m}</g></svg>`;
+}
+// Las tarjetas nunca muestran el nombre ni si están bien o mal.
+const card=(f,i)=>`<button class="card ${S.sel===f.id?'sel':''}" data-id="${f.id}" ${S.locked?'aria-disabled="true"':''} aria-label="Figura ${i+1}, precio ${f.price} colones">${figSVG(f)}<span class="tag">₡${f.price}</span></button>`;
+const inZone=z=>figs.filter(f=>where[f.id]===z).map(f=>card(f,figs.indexOf(f))).join('');
+const cap=t=>t[0].toUpperCase()+t.slice(1);
+function vennZones(){
+  const box=z=>`<div class="zone z${z}" data-zone="z${z}" tabindex="0" role="button" aria-label="Zona ${LEVEL[z]}"><div class="zl">${cap(LEVEL[z])}</div><div class="items">${inZone('z'+z)}</div>${z<3?box(z+1):''}</div>`;
+  return `<div class="venn">${box(0)}</div>`;
+}
+const starTxt=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function render(){
+  $('#bMenu').hidden=S.screen==='menu';$('.brand').hidden=S.screen==='menu';
+  if(S.screen==='menu') return menu();
+  if(S.screen==='end') return summary();
+  const r=ROUNDS[S.round];
+  const goal=r.venn?`<h2>Acomoda la vitrina</h2><p>Lleva cada figura a la zona <b>más interna</b> que le corresponda. Arrastra la figura, o tócala y luego toca la zona.</p>`
+    :`<h2>Compra ${r.goal}</h2><p>Echa a la bolsa <b>solo</b> los ${r.goal}. Arrastra la figura o tócala para meterla o sacarla. Cuando termines, presiona «Revisar».</p>`;
+  const right=r.venn?vennZones():`<div class="bag" data-zone="bag"><h3>Tu bolsa</h3><p class="hint">${pl(figs.filter(f=>where[f.id]==='bag').length,'figura adentro','figuras adentro')}</p><div class="items">${inZone('bag')}</div></div>`;
+  const what=r.venn?'vitrina':'compra';
+  app.innerHTML=`<p class="count">Actividad ${S.round+1} de 4</p><div class="goal">${goal}</div>
+  <div class="store ${r.venn?'v':''} ${S.locked?'locked':''}"><section class="shelfbox" data-zone="shelf" tabindex="-1"><h3>Estante</h3><div class="items" id="shelf">${inZone('shelf')||'<p class="empty">El estante quedó vacío.</p>'}</div></section><div>${right}</div></div>
+  <div class="actions">${S.result&&S.result.perfect?'':`<button class="btn main" id="bCheck" ${S.locked?'disabled':''}>Revisar ${what}</button>`}
+  ${S.result&&S.result.perfect?'':`<button class="btn ${S.locked?'main':''}" id="bReset">Reiniciar ${what}</button>`}</div><div id="tk">${ticket(what)}</div>`;
+}
+function ticket(what){
+  const res=S.result;if(!res)return'';const r=ROUNDS[S.round];
+  const rows=r.venn?'':`<table><tr><td>Figuras en la bolsa</td><td class="n">${figs.filter(f=>where[f.id]==='bag').length}</td></tr><tr class="tot"><td>Total</td><td class="n">₡${figs.filter(f=>where[f.id]==='bag').reduce((s,f)=>s+f.price,0)}</td></tr></table>`;
+  if(res.perfect) return `<section class="ticket ok" aria-label="Resultado"><h3>${r.venn?'¡Vitrina perfecta!':'¡Compra perfecta!'}</h3><p class="stars" aria-label="${S.stars[S.round]} estrellas">${starTxt(S.stars[S.round])}</p><p>${res.msg}</p>${rows}
+    <div class="actions"><button class="btn main" id="bNext">${S.round<3?'Siguiente actividad':'Ver resumen'}</button></div></section>`;
+  return `<section class="ticket" aria-label="Resultado"><h3>Revisa tu ${what}</h3><p class="sub">Intento ${S.attempts}</p><p class="msg">${res.msg}</p>${rows}${res.hint?`<p class="tip"><b>Pista:</b> ${res.hint}</p>`:''}</section>`;
+}
+function vennSVG(el){
+  const C=['#8a9bb0','#5b8def','#27ae60','#e0a800'];
+  el.innerHTML=LEVEL.map((n,i)=>`<rect x="${8+i*62}" y="${8+i*30}" width="${584-i*124}" height="${224-i*60}" rx="${26-i*4}" fill="${C[i]}" fill-opacity=".14" stroke="${C[i]}" stroke-width="3"/><text x="${22+i*62}" y="${32+i*30}" font-family="Baloo 2,sans-serif" font-weight="800" font-size="18" fill="currentColor">${cap(n)}</text>`).join('')
+   +`<text x="30" y="222" font-size="14" fill="currentColor">trapecios, trapezoides, cometas</text><text x="92" y="192" font-size="14" fill="currentColor">rombos, romboides</text>`;
+}
+function menu(){
+  app.innerHTML=`<section class="hero"><div class="sign">
+  <div class="chips"><span class="chip dark">Juego de geometría</span><span class="chip yel">4 actividades</span></div>
+  <h1 class="logo">La tiendita</h1><p class="ribbon">de los cuadriláteros</p>
+  <div class="lv"><span class="l1">Paralelogramos</span><span class="l2">Rectángulos</span><span class="l3">Cuadrados</span></div>
+  <p class="lead">Cuatro actividades para descubrir qué figuras son paralelogramos, rectángulos y cuadrados.</p>
+  <button class="btn main big" id="bStart">Iniciar</button></div>
+  <div class="scene">${SCENE}</div></section>`;
+}
+const SCENE=`<svg viewBox="-20 0 720 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vitrina de la tiendita con figuras de cuatro lados en los estantes y una bolsa de compras con un cuadrado, un rombo y un rectángulo">
+  <rect x="70" y="30" width="600" height="560" rx="28" fill="#ffffff" stroke="#0b7a75" stroke-width="10"/>
+  <rect x="70" y="30" width="600" height="70" rx="28" fill="#0b7a75"/>
+  <rect x="70" y="70" width="600" height="30" fill="#0b7a75"/>
+  <text x="370" y="78" text-anchor="middle" font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="32" fill="#ffffff">Ofertas del día</text>
+  <polygon points="120,250 250,250 280,175 150,175" fill="#9b51e0" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+  <polygon points="390,140 450,200 390,260 330,200" fill="#f2994a" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+  <polygon points="510,250 640,250 610,175 540,175" fill="#2d9cdb" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="90" y="268" width="560" height="22" rx="6" fill="#0b7a75"/>
+  <g font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="22" fill="#3a2c00" text-anchor="middle">
+    <rect x="160" y="296" width="80" height="34" rx="8" fill="#ffd23f"/><text x="200" y="322">₡350</text>
+    <rect x="350" y="296" width="80" height="34" rx="8" fill="#ffd23f"/><text x="390" y="322">₡500</text>
+    <rect x="535" y="296" width="80" height="34" rx="8" fill="#ffd23f"/><text x="575" y="322">₡250</text>
+  </g>
+  <polygon points="390,370 440,420 390,495 340,420" fill="#e8615a" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+  <polygon points="520,470 640,470 610,390 495,410" fill="#e8b923" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="90" y="500" width="560" height="22" rx="6" fill="#0b7a75"/>
+  <g font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="22" fill="#3a2c00" text-anchor="middle">
+    
+    <rect x="350" y="528" width="80" height="34" rx="8" fill="#ffd23f"/><text x="390" y="554">₡400</text>
+    <rect x="530" y="528" width="80" height="34" rx="8" fill="#ffd23f"/><text x="570" y="554">₡300</text>
+  </g>
+  <path d="M90 560 C90 470 160 470 160 560" fill="none" stroke="#8a6542" stroke-width="12"/>
+  <path d="M240 560 C240 470 310 470 310 560" fill="none" stroke="#8a6542" stroke-width="12"/>
+  <rect x="62" y="470" width="100" height="100" fill="#ffd23f" stroke="#1d2733" stroke-width="6" stroke-linejoin="round" transform="rotate(-12 112 520)"/>
+  <polygon points="200,430 250,500 200,570 150,500" fill="#5b8def" stroke="#1d2733" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="262" y="455" width="72" height="115" fill="#2fae6a" stroke="#1d2733" stroke-width="6" stroke-linejoin="round" transform="rotate(12 298 512)"/>
+  <path d="M40 555 L360 555 L380 690 L20 690 Z" fill="#c99b6a" stroke="#1d2733" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M40 555 L360 555 L355 585 L45 585 Z" fill="#b5854f"/>
+  <text x="200" y="650" text-anchor="middle" font-family="Baloo 2, Nunito, sans-serif" font-weight="800" font-size="34" fill="#2b1a08">Mi compra</text>
+  <g fill="#ffd23f" stroke="#1d2733" stroke-width="4" stroke-linejoin="round">
+    <path d="M610 610 l12 26 28 3 -21 19 6 28 -25 -14 -25 14 6 -28 -21 -19 28 -3z"/>
+    <path d="M520 640 l8 17 19 2 -14 13 4 19 -17 -10 -17 10 4 -19 -14 -13 19 -2z"/>
+  </g>
+</svg>`;
+function summary(){
+  const tot=S.stars.reduce((a,b)=>a+b,0);
+  app.innerHTML=`<div class="goal"><h2>¡Terminaste la tienda!</h2><p>Conseguiste <b>${tot} de 12</b> estrellas.</p></div>
+  <div class="store"><section class="shelfbox"><table class="res">${ROUNDS.map((r,i)=>`<tr><td>${r.title}</td><td class="stars">${starTxt(S.stars[i])}</td></tr>`).join('')}</table>
+  <p>Lo que aprendiste: todo cuadrado es rectángulo, todo rectángulo es paralelogramo y todo paralelogramo es cuadrilátero. Al revés no siempre se cumple.</p>
+  <div class="actions"><button class="btn main" id="bAgain">Volver al menú</button></div></section>
+  <section class="shelfbox"><div class="fig"><svg id="vennEnd" viewBox="0 0 600 240" role="img" aria-label="Diagrama de inclusión de cuadriláteros"></svg></div></section></div>`;
+  vennSVG($('#vennEnd'));
+}
+// Reiniciar = figuras nuevas; los intentos de la actividad se siguen contando para las estrellas.
+function deal(){S.result=null;S.sel=null;S.locked=false;figs=makeRound(S.round);where={};figs.forEach(f=>where[f.id]='shelf');render()}
+function startRound(i){S.screen='play';S.round=i;S.attempts=0;deal();window.scrollTo(0,0)}
+function move(id,z){if(S.locked||!z||where[id]===z)return;where[id]=z;S.result=null;S.sel=null;beep(520,.06);render()}
+
+// ---- Efectos ----
+let ac;const ctx=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}return ac};
+function beep(f,d,t=0){if(!S.fx||!ctx())return;try{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.setValueAtTime(.12,ac.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+t+d);o.connect(g).connect(ac.destination);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+d+.02)}catch(e){}}
+
+// ---- Música chill generativa (lo-fi), creada en el navegador sin archivos de audio ----
+const Music=(()=>{
+  const BPM=74,B=60/BPM,mf=n=>440*2**((n-69)/12);
+  const CH=[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]]; // Fmaj7 Em7 Dm7 Cmaj7
+  const PENTA=[72,74,76,79,81,84,86];
+  let out,noise,timer=null,next=0,step=0,mel=3,on=false;
+  function init(){if(out)return;const a=ctx();if(!a)return;out=a.createGain();out.gain.value=0;const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;out.connect(lp).connect(a.destination);
+    noise=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  function tone(type,f,t,dur,vol,att=.02){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(out);o.start(t);o.stop(t+dur+.05)}
+  function hit(t,freq,q,vol,dur,type){const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noise;f.type=type;f.frequency.value=freq;f.Q.value=q;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0008,t+dur);s.connect(f).connect(g).connect(out);s.start(t,Math.random()*.5);s.stop(t+dur+.02)}
+  function kick(t){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(42,t+.18);g.gain.setValueAtTime(.5,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g).connect(out);o.start(t);o.stop(t+.4)}
+  function schedule(){
+    while(next<ac.currentTime+.6){
+      const t=next,e=step%8,bar=Math.floor(step/8)%4,ch=CH[bar],sw=(e%2?B*.08:0);
+      if(e===0){ch.forEach((n,i)=>{tone('triangle',mf(n),t+i*.03,B*4.2,.035,.5);tone('sine',mf(n)*1.004,t,B*4.2,.02,.6)});tone('sine',mf(ch[0]-12),t,B*1.8,.16,.03)}
+      if(e===4)tone('sine',mf((Math.random()<.5?ch[0]:ch[2])-12),t,B*1.6,.14,.03);
+      if(e===0||e===5)kick(t);
+      if(e===2||e===6)hit(t,1800,.8,.09,.18,'bandpass');
+      hit(t+sw,7000,.7,e%2?.025:.04,.05,'highpass');
+      if(Math.random()<(e%2?.25:.4)){mel=Math.max(0,Math.min(PENTA.length-1,mel+pick([-2,-1,-1,0,1,1,2])));tone('triangle',mf(PENTA[mel]),t+sw,B*(Math.random()<.3?1.4:.7),.05,.01)}
+      step++;next+=B/2;
+    }
+  }
+  return {
+    start(){init();if(!out||on)return;on=true;if(ac.state==='suspended')ac.resume();next=ac.currentTime+.1;out.gain.cancelScheduledValues(ac.currentTime);out.gain.linearRampToValueAtTime(.55,ac.currentTime+1.5);timer=setInterval(schedule,150);schedule()},
+    stop(){if(!on)return;on=false;clearInterval(timer);timer=null;out.gain.cancelScheduledValues(ac.currentTime);out.gain.setTargetAtTime(0,ac.currentTime,.25)},
+    get playing(){return on}
+  };
+})();
+document.addEventListener('visibilitychange',()=>{if(!ac)return;document.hidden?ac.suspend():ac.resume()});
+
+const say=t=>{$('#live').textContent=t};
+app.addEventListener('click',e=>{
+  if(e.target.closest('#bStart')){if(S.music)Music.start();S.stars=[0,0,0,0];return startRound(0)}
+  if(e.target.closest('#bCheck')){S.attempts++;S.result=grade(S.round,figs,where,S.attempts);
+    if(S.result.perfect){S.stars[S.round]=S.attempts===1?3:S.attempts===2?2:1;[523,659,784].forEach((f,i)=>beep(f,.18,i*.12))}
+    else{S.locked=true;beep(196,.3)}
+    say(S.result.msg);render();$('#tk').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'});return}
+  if(e.target.closest('#bReset'))return deal();
+  if(e.target.closest('#bNext'))return S.round<3?startRound(S.round+1):(S.screen='end',render(),window.scrollTo(0,0));
+  if(e.target.closest('#bAgain')){S.screen='menu';return render()}
+});
+$('#bMenu').onclick=()=>{S.screen='menu';render();window.scrollTo(0,0)};
+$('#bLupa').onclick=function(){S.lupa=!S.lupa;this.setAttribute('aria-pressed',S.lupa);render()};
+$('#bMus').onclick=function(){S.music=!S.music;this.setAttribute('aria-pressed',S.music);this.textContent='Música: '+(S.music?'sí':'no');S.music&&S.screen!=='menu'?Music.start():Music.stop()};
+$('#bFx').onclick=function(){S.fx=!S.fx;this.setAttribute('aria-pressed',S.fx);this.textContent='Efectos: '+(S.fx?'sí':'no')};
+const dT=$('#dTeo'),closeT=()=>{dT.close();$('#bTeo').focus()};
+$('#bTeo').onclick=()=>{vennSVG($('#vennTeo'));dT.showModal()};$('#bCerrar').onclick=closeT;dT.addEventListener('click',e=>{if(e.target===dT)closeT()});
+
+// Arrastrar (mouse y táctil), tocar o teclado
+let drag=null;
+const zoneAt=(x,y)=>{const el=document.elementFromPoint(x,y);return el&&el.closest('[data-zone]')};
+const isVenn=()=>S.screen==='play'&&ROUNDS[S.round].venn;
+app.addEventListener('pointerdown',e=>{const c=e.target.closest('.card');if(!c||e.button>0||S.locked)return;drag={id:c.dataset.id,el:c,x:e.clientX,y:e.clientY,ghost:null,over:null};c.setPointerCapture(e.pointerId)});
+app.addEventListener('pointermove',e=>{if(!drag)return;
+  if(!drag.ghost){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<8)return;drag.ghost=drag.el.cloneNode(true);drag.ghost.classList.add('ghost');drag.ghost.style.width=drag.el.offsetWidth+'px';document.body.appendChild(drag.ghost);drag.el.style.opacity=.3}
+  drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px';
+  const z=zoneAt(e.clientX,e.clientY);if(z!==drag.over){drag.over&&drag.over.classList.remove('over');z&&z.classList.add('over');drag.over=z}});
+app.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;
+  if(d.ghost){d.ghost.remove();d.over&&d.over.classList.remove('over');d.el.style.opacity='';const z=zoneAt(e.clientX,e.clientY);if(z)move(d.id,z.dataset.zone);return}
+  if(isVenn()){S.sel=S.sel===d.id?null:d.id;render()}else move(d.id,where[d.id]==='bag'?'shelf':'bag')});
+app.addEventListener('pointercancel',()=>{if(drag&&drag.ghost){drag.ghost.remove();drag.el.style.opacity=''}drag=null});
+app.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const zz=e.target.matches('.zone')?e.target:null;
+  if(zz&&S.sel){e.preventDefault();return move(S.sel,zz.dataset.zone)}
+  const c=e.target.closest('.card');if(!c||S.locked)return;e.preventDefault();
+  if(isVenn()){S.sel=c.dataset.id;render();say('Figura elegida. Elige una zona.')}else move(c.dataset.id,where[c.dataset.id]==='bag'?'shelf':'bag')});
+app.addEventListener('click',e=>{if(!S.sel||e.target.closest('.card'))return;const z=e.target.closest('[data-zone]');if(z)move(S.sel,z.dataset.zone)});
+// Gancho para pruebas automáticas (solo lectura).
+window.__tienda={figs:()=>figs.map(f=>({id:f.id,level:f.level})),music:()=>Music.playing,state:()=>({screen:S.screen,round:S.round,locked:S.locked,stars:S.stars})};
+render();
+}
+}
+</script>
+</body>
+</html>

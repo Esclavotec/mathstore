@@ -1,12 +1,13 @@
-// Genera las portadas SVG (640×360) de covers/. Uso: node tools/generar-portadas.mjs
-// Cada portada es una ilustración propia y sencilla del tema del recurso.
+// Genera las portadas SVG (640×360) de covers/. Uso: npm run portadas
+// Cada portada es una ilustración propia y sencilla del recurso.
+// (La portada de "La tiendita de los cuadriláteros" es una imagen aportada: covers/tiendita-cuadrilateros.webp)
 import { writeFileSync, mkdirSync } from "node:fs";
 
 const W = 640, H = 360;
 const FUENTE = "'Arial Black', 'Segoe UI Black', Impact, sans-serif";
 
 /** Marco común: fondo, cuadrícula, ilustración y título. */
-function portada({ fondo, fondo2, tinta, titulo, sub, arte }) {
+function portada({ fondo, fondo2, tinta, titulo, sub, arte, tam = 44 }) {
   let rejilla = "";
   for (let x = 0; x <= W; x += 32) rejilla += `<path d="M${x} 0V${H}"/>`;
   for (let y = 0; y <= H; y += 32) rejilla += `<path d="M0 ${y}H${W}"/>`;
@@ -15,54 +16,62 @@ function portada({ fondo, fondo2, tinta, titulo, sub, arte }) {
 <rect width="${W}" height="${H}" fill="url(#g)"/>
 <g stroke="${tinta}" stroke-opacity="0.08" stroke-width="1">${rejilla}</g>
 ${arte}
-<text x="32" y="${H - 58}" font-family="${FUENTE}" font-size="44" fill="${tinta}" letter-spacing="-1">${titulo}</text>
+<text x="32" y="${H - 58}" font-family="${FUENTE}" font-size="${tam}" fill="${tinta}" letter-spacing="-1">${titulo}</text>
 <text x="34" y="${H - 28}" font-family="Consolas, monospace" font-size="17" fill="${tinta}" fill-opacity="0.75" letter-spacing="2">${sub}</text>
 </svg>`;
 }
 
+/** Auto de carreras visto de lado (mismo dibujo que en el juego). */
+const auto = (x, y, esc, carroceria) => `<g transform="translate(${x} ${y}) scale(${esc})">
+  <path d="M8 38c0-8 6-12 14-13l18-2 14-12c3-3 7-4 11-4h17c5 0 9 2 12 6l8 10 8 2c4 1 6 4 6 8v5c0 2-2 4-4 4H12c-2 0-4-2-4-4z" fill="${carroceria}"/>
+  <path d="M48 22l10-9c2-2 4-3 7-3h14c3 0 5 1 7 4l6 8z" fill="#14211d"/>
+  <circle cx="32" cy="46" r="9" fill="#111"/><circle cx="32" cy="46" r="4" fill="#9aa"/>
+  <circle cx="92" cy="46" r="9" fill="#111"/><circle cx="92" cy="46" r="4" fill="#9aa"/></g>`;
+
+/** Porción de pizza: cuña desde el centro (cx, cy) entre los ángulos a0 y a1 (grados). */
+function cuna(cx, cy, r, a0, a1, relleno) {
+  const p = (a) => [cx + Math.cos(a * Math.PI / 180) * r, cy + Math.sin(a * Math.PI / 180) * r].map((n) => n.toFixed(1)).join(" ");
+  return `<path d="M${cx} ${cy}L${p(a0)}A${r} ${r} 0 0 1 ${p(a1)}Z" fill="${relleno}"/>`;
+}
+
 const portadas = {
   "carrera-tablas": portada({
-    fondo: "#1d3a2f", fondo2: "#0f201a", tinta: "#f4f1e6", titulo: "CARRERA DE TABLAS", sub: "MULTIPLICA CONTRA EL RELOJ",
-    arte: `<g font-family="${FUENTE}" fill="#f2cf5b">
-      <text x="330" y="150" font-size="120" transform="rotate(-8 450 110)">7×8</text>
-      <text x="80" y="120" font-size="54" fill="#8fdc9e" fill-opacity="0.8">=56</text></g>
-      <g stroke="#f4f1e6" stroke-width="6" stroke-linecap="round" stroke-opacity="0.5"><path d="M40 190h120M70 210h150M30 230h90"/></g>
-      <circle cx="586" cy="200" r="30" fill="none" stroke="#f4f1e6" stroke-width="6"/><path d="M586 200V182M586 200l13 9" stroke="#f4f1e6" stroke-width="6" stroke-linecap="round"/>`
+    fondo: "#1d3a2f", fondo2: "#0f201a", tinta: "#f4f1e6", titulo: "CARRERA DE TABLAS", sub: "MULTIPLICA Y ACELERA",
+    arte: `<rect x="0" y="120" width="${W}" height="118" fill="#2a2f2d"/>
+      <path d="M0 122H${W}M0 236H${W}" stroke="#c9cfcb" stroke-width="5"/>
+      <path d="M0 179H${W}" stroke="#e9efe9" stroke-width="4" stroke-dasharray="26 22"/>
+      <rect x="596" y="120" width="44" height="118" fill="url(#cuadros)"/>
+      <defs><pattern id="cuadros" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#fff"/><rect width="11" height="11" fill="#111"/><rect x="11" y="11" width="11" height="11" fill="#111"/></pattern></defs>
+      <path d="M232 152h-60M220 142h-40M226 162h-34" stroke="#ffb02e" stroke-width="5" stroke-linecap="round"/>
+      ${auto(240, 122, 1.05, "#f2cf5b")}
+      ${auto(80, 182, 1.05, "#7cc4e8")}
+      <g font-family="${FUENTE}" fill="#f2cf5b"><text x="380" y="92" font-size="64" transform="rotate(-6 470 70)">7×8=56</text></g>`
   }),
-  "fraccion-exacta": portada({
-    fondo: "#3a2a1d", fondo2: "#1e140c", tinta: "#f8ecdc", titulo: "FRACCIÓN EXACTA", sub: "¿CUÁL ES MAYOR?",
-    arte: `<g transform="translate(360 40)">
-      <circle cx="90" cy="90" r="80" fill="#4a3624" stroke="#f8ecdc" stroke-width="4"/>
-      <path d="M90 90V10A80 80 0 0 1 169 103Z" fill="#f2cf5b"/>
-      <path d="M90 90L169 103A80 80 0 0 1 120 164Z" fill="#f2cf5b" fill-opacity="0.6"/>
-      </g>
-      <g font-family="${FUENTE}" fill="#f8ecdc"><text x="60" y="110" font-size="72">3</text><rect x="52" y="122" width="62" height="7" fill="#f8ecdc"/><text x="56" y="190" font-size="72">8</text>
-      <text x="150" y="160" font-size="60" fill="#ef8f9c">&lt;</text>
-      <text x="230" y="110" font-size="72">1</text><rect x="222" y="122" width="62" height="7" fill="#f8ecdc"/><text x="226" y="190" font-size="72">2</text></g>`
+  "pizzeria-fracciones": portada({
+    fondo: "#7a2e1f", fondo2: "#3d140c", tinta: "#fff3e0", tam: 34, titulo: "PIZZERÍA DE FRACCIONES", sub: "SIRVE 3/4 DE PIZZA",
+    arte: `<circle cx="470" cy="140" r="112" fill="#6b4a2b" stroke="#4e341d" stroke-width="6"/>
+      ${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => i < 6
+        ? `<g>${cuna(470, 140, 100, i * 45 - 90, i * 45 - 45, "#d9a35b")}${cuna(470, 140, 88, i * 45 - 90, i * 45 - 45, "#f5c84c")}</g>`
+        : cuna(470, 140, 100, i * 45 - 90, i * 45 - 45, "rgba(0,0,0,0.15)")).join("")}
+      <g stroke="#9c6b35" stroke-width="2">${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<path d="M470 140L${(470 + Math.cos((i * 45 - 90) * Math.PI / 180) * 100).toFixed(1)} ${(140 + Math.sin((i * 45 - 90) * Math.PI / 180) * 100).toFixed(1)}"/>`).join("")}</g>
+      <g fill="#b8322e">${[0, 1, 2, 3, 4, 5].map((i) => { const a = (i * 45 - 67.5) * Math.PI / 180; return `<circle cx="${(470 + Math.cos(a) * 58).toFixed(1)}" cy="${(140 + Math.sin(a) * 58).toFixed(1)}" r="10"/>`; }).join("")}</g>
+      <g transform="translate(70 40)"><rect width="190" height="120" rx="22" fill="#fff3e0"/><path d="M60 120l-6 24 30-24z" fill="#fff3e0"/>
+        <text x="95" y="56" text-anchor="middle" font-family="${FUENTE}" font-size="44" fill="#3d140c">6</text>
+        <rect x="70" y="66" width="50" height="6" fill="#3d140c"/>
+        <text x="95" y="110" text-anchor="middle" font-family="${FUENTE}" font-size="44" fill="#3d140c">8</text>
+        <text x="150" y="88" font-family="${FUENTE}" font-size="30" fill="#b8322e">=</text></g>`
   }),
   "angulo-ninja": portada({
-    fondo: "#1c2540", fondo2: "#0c1122", tinta: "#e8edf8", titulo: "ÁNGULO NINJA", sub: "ESTIMA LOS GRADOS",
-    arte: `<g stroke-linecap="round" fill="none">
-      <path d="M250 230H600" stroke="#e8edf8" stroke-width="10"/>
-      <path d="M250 230L470 50" stroke="#e8edf8" stroke-width="10"/>
-      <path d="M340 230A90 90 0 0 0 320 173" stroke="#f2cf5b" stroke-width="8"/>
-      <path d="M250 230L560 120" stroke="#8fdc9e" stroke-width="6" stroke-dasharray="16 12"/></g>
-      <text x="360" y="200" font-family="${FUENTE}" font-size="40" fill="#f2cf5b">39°</text>
-      <path d="M40 60l60 20-60 20 20-20z" fill="#ef8f9c"/>`
-  }),
-  "fichas-sumas-restas": portada({
-    fondo: "#f1ead8", fondo2: "#d9cfb5", tinta: "#2a2418", titulo: "SUMAS Y RESTAS", sub: "FICHAS IMPRIMIBLES · PDF",
-    arte: `<g transform="rotate(-6 450 120)"><rect x="350" y="20" width="220" height="200" rx="6" fill="#fffdf6" stroke="#2a2418" stroke-width="3"/>
-      <g font-family="Consolas, monospace" font-size="30" fill="#2a2418" text-anchor="end"><text x="520" y="80">347</text><text x="520" y="118">+ 185</text></g>
-      <path d="M410 132H530" stroke="#2a2418" stroke-width="3"/><text x="520" y="170" font-family="Consolas, monospace" font-size="30" fill="#c0392b" text-anchor="end">532</text></g>
-      <g font-family="${FUENTE}" font-size="90" fill="#2a2418" fill-opacity="0.15"><text x="40" y="150">+ −</text></g>`
-  }),
-  "fichas-ecuaciones": portada({
-    fondo: "#e4eef0", fondo2: "#bcd2d6", tinta: "#13262b", titulo: "ECUACIONES", sub: "PRIMER GRADO · PDF",
-    arte: `<g font-family="${FUENTE}" fill="#13262b"><text x="40" y="130" font-size="78">2x + 3 = 11</text></g>
-      <g font-family="Consolas, monospace" font-size="30" fill="#13262b" fill-opacity="0.7"><text x="420" y="190">x = 4</text></g>
-      <rect x="410" y="160" width="130" height="44" rx="6" fill="none" stroke="#c0392b" stroke-width="4"/>
-      <path d="M560 40l40 40M600 40l-40 40" stroke="#13262b" stroke-width="6" stroke-linecap="round" stroke-opacity="0.3"/>`
+    fondo: "#1c2540", fondo2: "#0c1122", tinta: "#e8edf8", titulo: "ÁNGULO NINJA", sub: "LANZA A 135°",
+    arte: `<circle cx="80" cy="60" r="26" fill="#f4f1e6" fill-opacity="0.9"/>
+      <path d="M150 240H560" stroke="#e8edf8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M350 240A200 200 0 0 0 150 240" fill="none" stroke="#e8edf8" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="6 12"/>
+      <path d="M350 240L240 120" stroke="#f2cf5b" stroke-width="5" stroke-dasharray="4 12" stroke-linecap="round"/>
+      <path d="M410 240A60 60 0 0 0 310 196" fill="none" stroke="#8fdc9e" stroke-width="5"/>
+      <text x="400" y="200" font-family="${FUENTE}" font-size="34" fill="#8fdc9e">135°</text>
+      <g transform="translate(240 112)"><circle r="34" fill="#f2cf5b" fill-opacity="0.18"/><rect x="-10" y="-24" width="20" height="6" fill="#2b1d14"/><rect x="-10" y="18" width="20" height="6" fill="#2b1d14"/><ellipse rx="17" ry="20" fill="#e5484d"/></g>
+      <g transform="translate(300 175) rotate(20)" fill="#cfd8dc"><path d="M0-5L18 0 0 5z"/><path d="M0-5L18 0 0 5z" transform="rotate(90)"/><path d="M0-5L18 0 0 5z" transform="rotate(180)"/><path d="M0-5L18 0 0 5z" transform="rotate(270)"/></g>
+      <g transform="translate(350 240)"><ellipse cy="-10" rx="18" ry="14" fill="#1a1a1a"/><circle cy="-36" r="16" fill="#1a1a1a"/><rect x="-16" y="-44" width="32" height="6" fill="#e5484d"/><path d="M-15-42l-16-8 2 13z" fill="#e5484d"/><rect x="-11" y="-38" width="22" height="7" fill="#f1c7a5"/><rect x="-7" y="-37" width="4" height="4" fill="#1a1a1a"/><rect x="3" y="-37" width="4" height="4" fill="#1a1a1a"/></g>`
   }),
   geogebra: portada({
     fondo: "#202233", fondo2: "#10111c", tinta: "#eceaf6", titulo: "GEOGEBRA", sub: "CALCULADORA GRÁFICA · WEB",

@@ -6,7 +6,6 @@
   "scripts": {
     "test": "node --test tests/catalogo.test.mjs",
     "portadas": "node tools/generar-portadas.mjs",
-    "pdfs": "node tools/generar-pdfs.mjs",
     "start": "python -m http.server 8000"
   }
 }

@@ -1,73 +1,76 @@
 [
   {
+    "id": "tiendita-cuadrilateros",
+    "titulo": "La tiendita de los cuadriláteros",
+    "portada": "covers/tiendita-cuadrilateros.webp",
+    "descripcion": "Una tiendita escolar donde compras solo las figuras que pide cada actividad: paralelogramos, rectángulos y cuadrados. En la última actividad acomodas la vitrina según qué figuras están dentro de otras. Trae una lupa que marca lados paralelos, lados iguales y ángulos rectos, además de un repaso de teoría.",
+    "tema": "Geometría",
+    "nivel": "secundaria",
+    "tipo": "jugar",
+    "url": "games/tiendita-cuadrilateros/index.html",
+    "etiquetas": [
+      "cuadriláteros",
+      "clasificación",
+      "paralelogramos"
+    ],
+    "edad": "12–14 años",
+    "duracion": "15 min",
+    "destacado": true,
+    "autor": "Antony Arias, basado en la actividad «Bolsa de cuadriláteros» de José Pablo Calderón Gairaud (PROMATES)"
+  },
+  {
     "id": "carrera-tablas",
     "titulo": "Carrera de Tablas",
     "portada": "covers/carrera-tablas.svg",
-    "descripcion": "Tienes 60 segundos para resolver todas las multiplicaciones que puedas, de la tabla del 2 a la del 10. Cada acierto seguido aumenta tu racha y suma puntos extra. Si fallas, se marca la respuesta correcta para que la recuerdes la próxima vez.",
+    "descripcion": "Una carrera contra un auto rival: cada multiplicación correcta hace avanzar tu auto. Antes de empezar eliges qué tablas practicar. Con 3 aciertos seguidos se activa el turbo, y en cada una de las 3 carreras el rival va más rápido. Tienes 3 vidas.",
     "tema": "Aritmética",
     "nivel": "primaria",
     "tipo": "jugar",
     "url": "carrera-tablas",
-    "etiquetas": ["multiplicación", "cálculo mental", "contrarreloj"],
+    "etiquetas": [
+      "multiplicación",
+      "cálculo mental",
+      "carreras"
+    ],
     "edad": "7–11 años",
-    "duracion": "1 min",
+    "duracion": "5 min",
     "destacado": true
   },
   {
-    "id": "fraccion-exacta",
-    "titulo": "Fracción Exacta",
-    "portada": "covers/fraccion-exacta.svg",
-    "descripcion": "Diez parejas de fracciones: elige la mayor o indica que son equivalentes. Cada fracción se dibuja como una barra dividida en partes, para que se vea la cantidad además del número. Responder rápido da puntos extra.",
+    "id": "pizzeria-fracciones",
+    "titulo": "Pizzería de Fracciones",
+    "portada": "covers/pizzeria-fracciones.svg",
+    "descripcion": "Atiende a los clientes de la pizzería: cada uno pide una fracción de pizza y tú tocas las porciones para servirla. En el nivel 2 la pizza viene cortada en más partes y en el nivel 3 los pedidos llegan sin simplificar, así que hay que pensar en fracciones equivalentes. Si sirves rápido, ganas propina.",
     "tema": "Fracciones",
     "nivel": "primaria",
     "tipo": "jugar",
-    "url": "fraccion-exacta",
-    "etiquetas": ["comparar fracciones", "equivalencia", "representación"],
-    "edad": "9–12 años",
-    "duracion": "3 min",
+    "url": "pizzeria-fracciones",
+    "etiquetas": [
+      "fracciones equivalentes",
+      "representación",
+      "simplificar"
+    ],
+    "edad": "8–12 años",
+    "duracion": "6 min",
     "destacado": true
   },
   {
     "id": "angulo-ninja",
     "titulo": "Ángulo Ninja",
     "portada": "covers/angulo-ninja.svg",
-    "descripcion": "Mira el ángulo y estima cuántos grados mide con el deslizador. Al comprobar, aparece tu estimación sobre el ángulo real y su clasificación: agudo, recto u obtuso. Cinco rondas, y cuanto más te acerques, más puntos.",
+    "descripcion": "Entrena como ninja: apunta y lanza tu estrella para cortar la linterna que está al ángulo pedido, sin transportador. En el último nivel no hay linternas y tienes que lanzar a la medida exacta. Después de cada lanzamiento se dibuja el ángulo real para que compares.",
     "tema": "Geometría",
     "nivel": "secundaria",
     "tipo": "jugar",
     "url": "angulo-ninja",
-    "etiquetas": ["ángulos", "estimación", "grados"],
+    "etiquetas": [
+      "ángulos",
+      "estimación",
+      "grados"
+    ],
     "edad": "11–14 años",
-    "duracion": "3 min",
+    "duracion": "5 min",
     "destacado": true
-  },
-  {
-    "id": "fichas-sumas-restas",
-    "titulo": "Fichas de Sumas y Restas",
-    "portada": "covers/fichas-sumas-restas.svg",
-    "descripcion": "Cuadernillo imprimible en PDF con 3 páginas de sumas y restas con llevadas (hasta 3 cifras) y hoja de soluciones al final. Pensado para repasar en casa o en clase.",
-    "tema": "Aritmética",
-    "nivel": "primaria",
-    "tipo": "descargar",
-    "url": "material/fichas-sumas-restas.pdf",
-    "etiquetas": ["imprimible", "sumas", "restas", "con soluciones"],
-    "edad": "7–9 años",
-    "duracion": "30 min",
-    "destacado": false
-  },
-  {
-    "id": "fichas-ecuaciones",
-    "titulo": "Ecuaciones de Primer Grado",
-    "portada": "covers/fichas-ecuaciones.svg",
-    "descripcion": "Hoja de ejercicios en PDF con 20 ecuaciones de primer grado ordenadas de menor a mayor dificultad: de x + 5 = 12 a ecuaciones con paréntesis. Incluye las soluciones.",
-    "tema": "Álgebra",
-    "nivel": "secundaria",
-    "tipo": "descargar",
-    "url": "material/fichas-ecuaciones.pdf",
-    "etiquetas": ["imprimible", "ecuaciones", "despejar x", "con soluciones"],
-    "edad": "12–15 años",
-    "duracion": "45 min",
-    "destacado": false
   },
   {
     "id": "geogebra",
@@ -78,7 +81,11 @@
     "nivel": "secundaria",
     "tipo": "web",
     "url": "https://www.geogebra.org/calculator",
-    "etiquetas": ["funciones", "gráficas", "geometría dinámica"],
+    "etiquetas": [
+      "funciones",
+      "gráficas",
+      "geometría dinámica"
+    ],
     "edad": "12+ años",
     "duracion": "Libre",
     "destacado": false
@@ -92,7 +99,11 @@
     "nivel": "primaria",
     "tipo": "web",
     "url": "https://es.khanacademy.org/math",
-    "etiquetas": ["cursos", "videos", "ejercicios"],
+    "etiquetas": [
+      "cursos",
+      "videos",
+      "ejercicios"
+    ],
     "edad": "6+ años",
     "duracion": "Libre",
     "destacado": false
@@ -106,7 +117,11 @@
     "nivel": "secundaria",
     "tipo": "web",
     "url": "https://phet.colorado.edu/es/simulations/filter?subjects=math",
-    "etiquetas": ["simulaciones", "interactivo", "probabilidad"],
+    "etiquetas": [
+      "simulaciones",
+      "interactivo",
+      "probabilidad"
+    ],
     "edad": "8+ años",
     "duracion": "Libre",
     "destacado": false

@@ -15,7 +15,7 @@ const CAMPOS = ["id", "titulo", "portada", "descripcion", "tema", "nivel", "tipo
 const TIPOS = ["jugar", "descargar", "web"];
 
 test("el catálogo tiene recursos con todos los campos obligatorios", () => {
-  assert.ok(catalogo.length >= 8);
+  assert.ok(catalogo.length >= 7);
   for (const r of catalogo) {
     for (const c of CAMPOS) assert.ok(r[c] !== undefined && r[c] !== "", `${r.id}: falta "${c}"`);
     assert.ok(TIPOS.includes(r.tipo), `${r.id}: tipo inválido "${r.tipo}"`);
@@ -35,7 +35,12 @@ test("cada portada existe", () => {
 
 test("cada botón apunta a algo que existe", () => {
   for (const r of catalogo) {
-    if (r.tipo === "jugar") assert.ok(existsSync(raiz(`js/juegos/${r.url}.js`)), `${r.id}: falta js/juegos/${r.url}.js`);
+    if (r.tipo === "jugar") {
+      // juego propio (js/juegos/<id>.js) o juego HTML completo (games/.../index.html)
+      const ruta = /.html?$/.test(r.url) ? r.url : `js/juegos/${r.url}.js`;
+      assert.ok(existsSync(raiz(ruta)), `${r.id}: falta ${ruta}`);
+      if (!/.html?$/.test(r.url)) assert.match(readFileSync(raiz("index.html"), "utf8"), new RegExp(`js/juegos/${r.url}\.js`), `${r.id}: index.html no carga su script`);
+    }
     if (r.tipo === "descargar") {
       assert.ok(existsSync(raiz(r.url)), `${r.id}: falta ${r.url}`);
       assert.equal(readFileSync(raiz(r.url)).subarray(0, 5).toString(), "%PDF-", `${r.id}: no es un PDF`);
@@ -44,12 +49,25 @@ test("cada botón apunta a algo que existe", () => {
   }
 });
 
-test("hay los tres tipos de botón y al menos un destacado", () => {
-  for (const t of TIPOS) assert.ok(catalogo.some((r) => r.tipo === t), `no hay recursos de tipo ${t}`);
+test("ya no hay PDF y quedan juegos, enlaces y destacados", () => {
+  assert.ok(!catalogo.some((r) => r.tipo === "descargar"), "los PDF se quitaron a propósito");
+  assert.ok(!existsSync(raiz("material")), "la carpeta material/ ya no debe existir");
+  for (const t of ["jugar", "web"]) assert.ok(catalogo.some((r) => r.tipo === t), `no hay recursos de tipo ${t}`);
   assert.ok(catalogo.some((r) => r.destacado));
 });
 
-test("generarMultiplicacion: 4 opciones distintas y una es la correcta", () => {
+test("La tiendita de los cuadriláteros está completa y con créditos", () => {
+  const t = catalogo.find((r) => r.id === "tiendita-cuadrilateros");
+  assert.ok(t, "falta en el catálogo");
+  assert.equal(t.tipo, "jugar");
+  assert.match(t.autor, /Antony Arias/);
+  assert.match(t.autor, /José Pablo Calderón Gairaud/);
+  const html = readFileSync(raiz(t.url), "utf8");
+  assert.ok(html.includes("<title>Tiendita de cuadriláteros</title>"), "no es el juego esperado");
+  assert.equal(readFileSync(raiz(t.portada)).subarray(8, 12).toString(), "WEBP");
+});
+
+test("generarMultiplicacion: 4 opciones distintas, una correcta y respeta las tablas elegidas", () => {
   for (let i = 0; i < 500; i++) {
     const p = L.generarMultiplicacion();
     assert.equal(p.correcta, p.a * p.b);
@@ -57,18 +75,51 @@ test("generarMultiplicacion: 4 opciones distintas y una es la correcta", () => {
     assert.equal(new Set(p.opciones).size, 4);
     assert.ok(p.opciones.includes(p.correcta));
     assert.ok(p.opciones.every((o) => o > 0));
+    const q = L.generarMultiplicacion(null, [7]);
+    assert.ok(q.a === 7 || q.b === 7, "con la tabla del 7, uno de los factores es 7");
   }
 });
 
-test("compararFracciones y generarParFracciones", () => {
-  assert.equal(L.compararFracciones(1, 2, 2, 4), 0);
-  assert.equal(L.compararFracciones(3, 4, 2, 3), 1);
-  assert.equal(L.compararFracciones(1, 3, 1, 2), -1);
-  for (let i = 0; i < 500; i++) {
-    const p = L.generarParFracciones();
-    assert.ok(p.a[0] < p.a[1] && p.b[0] < p.b[1], "fracciones propias");
-    assert.equal(p.resultado, L.compararFracciones(p.a[0], p.a[1], p.b[0], p.b[1]));
+test("Carrera: el rival es más rápido en cada nivel y 10 aciertos llegan a la meta", () => {
+  assert.ok(L.segundosRival(1) > L.segundosRival(2) && L.segundosRival(2) > L.segundosRival(3));
+  assert.ok(Math.abs(L.avanceJugador(0) * 10 - 1) < 1e-9);
+  assert.ok(L.avanceJugador(3) > L.avanceJugador(2), "el turbo avanza más");
+});
+
+test("Pizzería: los pedidos siempre se pueden servir con porciones enteras", () => {
+  assert.deepEqual(L.simplificar(6, 8), [3, 4]);
+  assert.ok(L.pedidoCorrecto(3, 6, 1, 2));
+  assert.ok(L.pedidoCorrecto(3, 4, 6, 8));
+  assert.ok(!L.pedidoCorrecto(2, 4, 3, 4));
+  for (const nivel of [1, 2, 3]) {
+    for (let i = 0; i < 500; i++) {
+      const p = L.generarPedido(nivel);
+      assert.ok(p.num > 0 && p.num < p.den, `nivel ${nivel}: fracción propia (${p.num}/${p.den})`);
+      assert.ok(Number.isInteger(p.necesarias) && p.necesarias > 0 && p.necesarias < p.porciones, `nivel ${nivel}: ${p.num}/${p.den} en ${p.porciones}`);
+      assert.ok(L.pedidoCorrecto(p.necesarias, p.porciones, p.num, p.den));
+      if (nivel === 1) assert.equal(p.porciones, p.den);
+      if (nivel === 2) assert.ok(p.porciones > p.den, "nivel 2: pizza cortada en más partes");
+      if (nivel === 3) assert.ok(p.porciones < p.den, "nivel 3: pizza cortada en menos partes");
+      assert.ok(p.porciones <= 12, "nunca más de 12 porciones");
+    }
   }
+});
+
+test("Ángulo Ninja: linternas separadas, impactos y ángulo desde un punto", () => {
+  for (const [n, sep] of [[3, 40], [4, 22]]) {
+    for (let i = 0; i < 300; i++) {
+      const g = L.generarLinternas(n, sep);
+      assert.equal(g.angulos.length, n);
+      g.angulos.forEach((a, j) => { assert.ok(a >= 15 && a <= 165); if (j) assert.ok(a - g.angulos[j - 1] >= sep); });
+      assert.ok(g.objetivo >= 0 && g.objetivo < n);
+    }
+  }
+  assert.equal(L.linternaAlcanzada([30, 90, 150], 95, 9), 1);
+  assert.equal(L.linternaAlcanzada([30, 90, 150], 60, 9), -1);
+  assert.equal(L.anguloDesde(1, 0), 0);
+  assert.equal(Math.round(L.anguloDesde(0, 1)), 90);
+  assert.equal(L.anguloDesde(-1, 0), 180);
+  assert.equal(L.anguloDesde(1, -1), 0, "por debajo del suelo cuenta como 0°");
 });
 
 test("puntajeAngulo y tipoAngulo", () => {
@@ -81,7 +132,8 @@ test("puntajeAngulo y tipoAngulo", () => {
 });
 
 test("filtrarCatalogo: búsqueda sin tildes y filtros combinados", () => {
-  assert.deepEqual(L.filtrarCatalogo(catalogo, { texto: "angulo" }).map((r) => r.id), ["angulo-ninja"]);
+  assert.ok(L.filtrarCatalogo(catalogo, { texto: "angulo" }).length >= 2, "sin tilde encuentra «ángulos»");
+  assert.deepEqual(L.filtrarCatalogo(catalogo, { texto: "angulo ninja" }).map((r) => r.id), ["angulo-ninja"]);
   assert.ok(L.filtrarCatalogo(catalogo, { tipo: "web" }).every((r) => r.tipo === "web"));
   const combinado = L.filtrarCatalogo(catalogo, { tema: "Aritmética", nivel: "primaria", tipo: "jugar" });
   assert.deepEqual(combinado.map((r) => r.id), ["carrera-tablas"]);
