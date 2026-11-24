@@ -1,5 +1,7 @@
 # MathStore
 
+**Página publicada:** <https://esclavotec.github.io/mathstore/> · **Repositorio:** <https://github.com/Esclavotec/mathstore>
+
 Tienda web al estilo de una tienda de videojuegos, pero para **juegos y material didáctico de matemáticas**.
 Cada recurso aparece como una tarjeta con **portada y nombre**. Al hacer clic se abre su **ficha** (descripción, tema, nivel, edad, duración y etiquetas) con un botón que cambia según el tipo:
 
@@ -111,17 +113,15 @@ Si Firebase falla o la colección está vacía, la tienda usa automáticamente `
 
 ## Publicar en GitHub Pages
 
-El proyecto ya tiene `git init` hecho, pero todavía no tiene commits.
+La tienda ya está publicada: GitHub Pages sirve la rama `main` desde la raíz del repositorio. Para publicar cambios basta con subirlos; la página se actualiza sola en uno o dos minutos:
 
 ```powershell
 git add .
-git commit -m "MathStore: primera versión"
-git branch -M main
-git remote add origin https://github.com/<tu-usuario>/mathstore.git
-git push -u origin main
+git commit -m "Describe tu cambio"
+git push
 ```
 
-En GitHub, entra en **Settings → Pages → Deploy from a branch → main / (root)**. Unos minutos después la tienda estará en `https://<tu-usuario>.github.io/mathstore/`.
+`.gitattributes` marca los PDF como binarios para que git no los dañe al convertir los saltos de línea en Windows.
 
 ## Pruebas realizadas
 
@@ -133,6 +133,8 @@ En GitHub, entra en **Settings → Pages → Deploy from a branch → main / (ro
   - En móvil (375 px) no hay desplazamiento horizontal.
 
 ## Cambios en esta versión
+
+- Publicada en GitHub (repositorio público `mathstore`) con GitHub Pages activado. Se añadió `.gitattributes` para proteger los PDF.
 
 - Primera versión: tienda, 3 juegos, 2 fichas PDF, 3 enlaces, Firebase opcional y tests.
 - Corrección durante las pruebas: al cerrar y reabrir el modal muy rápido, el evento `close` (que llega con retraso) borraba el juego recién abierto. Ahora se ignora si el modal ya está abierto otra vez.
