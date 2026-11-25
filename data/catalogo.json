@@ -3,7 +3,7 @@
     "id": "tiendita-cuadrilateros",
     "titulo": "La tiendita de los cuadriláteros",
     "portada": "covers/tiendita-cuadrilateros.webp",
-    "descripcion": "Una tiendita escolar donde compras solo las figuras que pide cada actividad: paralelogramos, rectángulos y cuadrados. En la última actividad acomodas la vitrina según qué figuras están dentro de otras. Trae una lupa que marca lados paralelos, lados iguales y ángulos rectos, además de un repaso de teoría.",
+    "descripcion": "Clasifica cuadriláteros comprando en una tiendita: lleva a la bolsa solo los paralelogramos, rectángulos o cuadrados que pide cada actividad. Puedes jugar la actividad original de GeoGebra o su versión renovada, con lupa, teoría de repaso y una vitrina final para acomodar las figuras.",
     "tema": "Geometría",
     "nivel": "secundaria",
     "tipo": "jugar",
@@ -11,12 +11,36 @@
     "etiquetas": [
       "cuadriláteros",
       "clasificación",
-      "paralelogramos"
+      "paralelogramos",
+      "GeoGebra"
     ],
     "edad": "12–14 años",
     "duracion": "15 min",
     "destacado": true,
-    "autor": "Antony Arias, basado en la actividad «Bolsa de cuadriláteros» de José Pablo Calderón Gairaud (PROMATES)"
+    "autor": "José Pablo Calderón Gairaud (PROMATES), actividad original; Antony Arias, versión renovada",
+    "versiones": [
+      {
+        "id": "original",
+        "nombre": "Bolsa de cuadrilateros",
+        "etiqueta": "Original · GeoGebra",
+        "portada": "covers/bolsa-cuadrilateros-geogebra.svg",
+        "autor": "José Pablo Calderón Gairaud (PROMATES)",
+        "descripcion": "La actividad original en GeoGebra.",
+        "url": "https://www.geogebra.org/material/iframe/id/hj3bdkta",
+        "enlace": "https://www.geogebra.org/m/hj3bdkta",
+        "boton": "Jugar en GeoGebra"
+      },
+      {
+        "id": "renovada",
+        "nombre": "La tiendita de los cuadriláteros",
+        "etiqueta": "Versión renovada",
+        "portada": "covers/tiendita-cuadrilateros.webp",
+        "autor": "Antony Arias",
+        "descripcion": "Basada en el original: 4 actividades, lupa, teoría, estrellas y música.",
+        "url": "games/tiendita-cuadrilateros/index.html",
+        "boton": "Jugar"
+      }
+    ]
   },
   {
     "id": "carrera-tablas",

@@ -140,3 +140,20 @@ test("filtrarCatalogo: búsqueda sin tildes y filtros combinados", () => {
   assert.equal(L.filtrarCatalogo(catalogo, { texto: "zzz" }).length, 0);
   assert.equal(L.filtrarCatalogo(catalogo, {}).length, catalogo.length);
 });
+
+test("La tiendita tiene 2 versiones: el original de GeoGebra y la renovada", () => {
+  const t = catalogo.find((r) => r.id === "tiendita-cuadrilateros");
+  assert.equal(t.versiones.length, 2);
+  const [original, renovada] = t.versiones;
+  assert.equal(original.id, "original");
+  assert.equal(original.url, "https://www.geogebra.org/material/iframe/id/hj3bdkta", "visor oficial de GeoGebra para incrustar");
+  assert.equal(original.enlace, "https://www.geogebra.org/m/hj3bdkta", "enlace directo a la actividad");
+  assert.match(original.autor, /José Pablo Calderón Gairaud/);
+  assert.equal(renovada.id, "renovada");
+  assert.match(renovada.autor, /Antony Arias/);
+  assert.ok(existsSync(raiz(renovada.url)), "falta el juego renovado");
+  for (const v of t.versiones) {
+    for (const c of ["id", "nombre", "etiqueta", "portada", "autor", "url"]) assert.ok(v[c], `versión ${v.id}: falta "${c}"`);
+    assert.ok(existsSync(raiz(v.portada)), `versión ${v.id}: no existe ${v.portada}`);
+  }
+});

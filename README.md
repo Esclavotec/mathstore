@@ -17,7 +17,7 @@ También tiene un carrusel de destacados, un buscador (no distingue tildes ni ma
 
 | Juego | Tema | Cómo se juega |
 |---|---|---|
-| **La tiendita de los cuadriláteros** | Geometría | Compra solo paralelogramos, rectángulos o cuadrados, y acomoda la vitrina. Es un juego de Antony Arias, basado en «Bolsa de cuadriláteros» de José Pablo Calderón Gairaud (PROMATES) |
+| **La tiendita de los cuadriláteros** (2 versiones) | Geometría | Compra solo paralelogramos, rectángulos o cuadrados. En la ficha eliges la versión:<br/>• **Original**: *Bolsa de cuadrilateros* de José Pablo Calderón Gairaud (PROMATES), en GeoGebra (<https://www.geogebra.org/m/hj3bdkta>).<br/>• **Renovada**: *La tiendita de los cuadriláteros* de Antony Arias, con lupa, teoría, vitrina final y estrellas |
 | **Carrera de Tablas** | Multiplicación | Carrera contra un auto rival. Eliges qué tablas practicar, hay turbo con 3 aciertos seguidos, 3 carreras cada vez más rápidas y 3 vidas |
 | **Pizzería de Fracciones** | Fracciones | Sirves la fracción de pizza que pide cada cliente tocando las porciones. Los niveles 2 y 3 usan fracciones equivalentes. Hay barra de paciencia y propina |
 | **Ángulo Ninja** | Ángulos | Apuntas y lanzas una estrella a la linterna que está al ángulo pedido, sin transportador. El nivel 3 es de lanzamiento libre. Después de cada tiro se dibuja el ángulo real |
@@ -45,14 +45,17 @@ flowchart LR
   UI -->|clic en tarjeta| M[Ficha de detalle]
   M -->|jugar, juego propio| G[js/juegos/*.js<br/>+ kit.js]
   M -->|jugar, juego HTML| IF[games/*/index.html<br/>en un marco]
+  M -->|recurso con versiones| SV[Elige versión]
+  SV -->|Original| GG[GeoGebra en un marco<br/>visor oficial escalado]
+  SV -->|Renovada| IF
   M -->|web| W[sitio externo]
   LOG[js/logica.js<br/>funciones puras + tests] --> G
   LOG --> UI
-  style IF fill:#f2cf5b,color:#14211d
-  style G fill:#8fdc9e,color:#14211d
+  style SV fill:#7cc4e8,color:#14211d
+  style GG fill:#7cc4e8,color:#14211d
 ```
 
-En amarillo, lo nuevo de esta versión (juegos HTML completos). En verde, los juegos rehechos.
+En azul, lo nuevo de la versión 3: el selector de versiones y el original de GeoGebra.
 
 ```
 index.html                       página principal
@@ -115,6 +118,28 @@ Qué va en `url`:
 - **Juego propio con el kit:** crea `js/juegos/<id>.js` siguiendo el contrato documentado al inicio de `js/juegos/carrera-tablas.js` (`ctx.escenario`, `ctx.marcador`, `ctx.terminar(puntos, resumen, estrellas)`), añade su `<script>` en `index.html` y pon `"url": "<id>"`.
 - **Sitio web:** el enlace `https://…`.
 
+**Un juego con varias versiones** (por ejemplo, el original y una renovada) lleva además una lista `versiones`. La ficha muestra entonces «Elige versión», con una tarjeta y un botón por versión:
+
+```json
+"versiones": [
+  {
+    "id": "original",
+    "nombre": "Bolsa de cuadrilateros",
+    "etiqueta": "Original · GeoGebra",
+    "portada": "covers/bolsa-cuadrilateros-geogebra.svg",
+    "autor": "José Pablo Calderón Gairaud (PROMATES)",
+    "url": "https://www.geogebra.org/material/iframe/id/hj3bdkta",
+    "enlace": "https://www.geogebra.org/m/hj3bdkta",
+    "boton": "Jugar en GeoGebra"
+  },
+  { "id": "renovada", "nombre": "La tiendita de los cuadriláteros", "etiqueta": "Versión renovada",
+    "portada": "covers/tiendita-cuadrilateros.webp", "autor": "Antony Arias",
+    "url": "games/tiendita-cuadrilateros/index.html" }
+]
+```
+
+Para cualquier actividad de GeoGebra: si su enlace es `geogebra.org/m/XXXX`, usa `url` = `https://www.geogebra.org/material/iframe/id/XXXX`. La tienda le añade sola el ancho y el alto del visor para que la actividad quepa completa. `enlace` es el botón de respaldo para abrirla en geogebra.org.
+
 Después ejecuta `npm test`: avisa si falta un campo, la portada, el archivo del juego o su `<script>`.
 
 ## Firebase (opcional)
@@ -148,7 +173,7 @@ git push
 
 ## Pruebas realizadas
 
-- **`npm test`: 12 tests en verde.**
+- **`npm test`: 13 tests en verde.**
   - Catálogo: campos completos, ids únicos, portadas, juegos y `<script>` existentes, que no queden PDF, y la tiendita con sus créditos y su portada WebP.
   - Lógica de los juegos, generando cientos de casos por juego:
     - multiplicaciones con las tablas elegidas;
@@ -164,6 +189,18 @@ git push
 - **Navegador, en celular (375 px):** los 4 juegos y la tienda, sin desbordes horizontales.
 
 ## Cambios
+
+### Versión 3
+- **La tiendita ahora tiene 2 versiones en una sola ficha:**
+  - el **original** de GeoGebra, *Bolsa de cuadrilateros* de José Pablo Calderón Gairaud (PROMATES), con portada propia;
+  - la **versión renovada** de Antony Arias.
+- La tarjeta muestra la insignia «2 versiones» y el carrusel dice «Elegir versión».
+- El original se juega dentro de la tienda con el visor oficial de GeoGebra, escalado al tamaño del visor y con botón de pantalla completa. También hay un enlace para abrirlo en geogebra.org.
+- Nuevo test (13 en total) que comprueba las dos versiones, sus portadas, sus enlaces y sus créditos.
+- Probado en el navegador:
+  - las dos versiones se abren desde la ficha y «Volver» regresa al selector;
+  - GeoGebra carga escalado;
+  - en celular, las tarjetas de versión se apilan sin desbordar.
 
 ### Versión 2
 - **Logo nuevo:** manzana con un gusano, también como icono de la pestaña.

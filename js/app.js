@@ -43,6 +43,10 @@
   /* ---------- Botón de acción según el tipo ---------- */
   function botonAccion(r, clase) {
     var t = TIPOS[r.tipo];
+    // Juegos con varias versiones (p. ej. original y renovada): primero se elige en la ficha
+    if (r.versiones && r.versiones.length > 1) {
+      return '<button type="button" class="boton ' + clase + '" data-abrir="' + esc(r.id) + '">' + ICONOS.jugar + "<span>Elegir versión</span></button>";
+    }
     var contenido = ICONOS[r.tipo] + "<span>" + t.nombre + "</span>";
     if (r.tipo === "jugar") {
       return '<button type="button" class="boton ' + clase + '" data-jugar="' + esc(r.id) + '">' + contenido + "</button>";
@@ -107,7 +111,8 @@
         '<div class="tarjeta-info">' +
           "<h3>" + esc(r.titulo) + "</h3>" +
           '<div class="meta"><span>' + esc(r.tema) + " · " + nivelBonito(r.nivel) + "</span>" +
-          '<span class="tipo tipo-' + esc(r.tipo) + '">' + TIPOS[r.tipo].insignia + "</span></div>" +
+          '<span class="insignias">' + (r.versiones && r.versiones.length > 1 ? '<span class="tipo tipo-versiones">' + r.versiones.length + " versiones</span>" : "") +
+          '<span class="tipo tipo-' + esc(r.tipo) + '">' + TIPOS[r.tipo].insignia + "</span></span></div>" +
         "</div></button>";
     }).join("");
     $("#vacio").hidden = lista.length > 0;
@@ -141,18 +146,40 @@
         "</dl>" +
         "<p>" + esc(r.descripcion) + "</p>" +
         '<div class="etiquetas">' + (r.etiquetas || []).map(function (e) { return "<span>" + esc(e) + "</span>"; }).join("") + "</div>" +
-        "<div>" + botonAccion(r, "boton-principal") + "</div>" +
-        '<span class="aviso">' + aviso + record + "</span>" +
+        (r.versiones && r.versiones.length > 1 ? selectorVersiones(r)
+          : "<div>" + botonAccion(r, "boton-principal") + "</div>" + '<span class="aviso">' + aviso + record + "</span>") +
       "</div>";
     if (!modal.open) modal.showModal();
     modal.scrollTop = 0;
     if (!sinHash && location.hash !== "#" + r.id) history.replaceState(null, "", "#" + r.id);
   }
 
+  /** Sección "Elige versión": una tarjeta por versión con portada, créditos y su botón de jugar. */
+  function selectorVersiones(r) {
+    return '<section class="versiones" aria-labelledby="titulo-versiones">' +
+      '<h3 id="titulo-versiones">Elige versión</h3>' +
+      '<div class="versiones-lista">' + r.versiones.map(function (v, i) {
+        return '<article class="version' + (i === 0 ? " version-original" : "") + '">' +
+          '<img src="' + esc(v.portada) + '" alt="Portada de ' + esc(v.nombre) + '" loading="lazy">' +
+          '<div class="version-info">' +
+            '<span class="version-etiqueta">' + esc(v.etiqueta) + "</span>" +
+            "<h4>" + esc(v.nombre) + "</h4>" +
+            '<p class="version-autor">' + esc(v.autor) + "</p>" +
+            (v.descripcion ? "<p>" + esc(v.descripcion) + "</p>" : "") +
+            '<div class="version-acciones">' +
+              '<button type="button" class="boton boton-principal" data-jugar="' + esc(r.id) + '" data-version="' + esc(v.id) + '">' + ICONOS.jugar + "<span>" + esc(v.boton || "Jugar") + "</span></button>" +
+              (v.enlace ? '<a class="enlace-externo" href="' + esc(v.enlace) + '" target="_blank" rel="noopener noreferrer">Abrir en ' + esc(v.enlace.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]) + "</a>" : "") +
+            "</div>" +
+          "</div></article>";
+      }).join("") + "</div>" +
+      '<p class="aviso">La versión renovada está basada en la actividad original.</p>' +
+      "</section>";
+  }
+
   function pararJuego() { if (limpiarJuego) { limpiarJuego(); limpiarJuego = null; } }
 
   /** ¿El recurso es un juego HTML completo (p. ej. games/tiendita-cuadrilateros/index.html)? */
-  function esJuegoHTML(r) { return /\.html?$/i.test(String(r.url)); }
+  function esJuegoHTML(r) { return /\.html?$/i.test(String(r.url)) || /^https:\/\//i.test(String(r.url)); }
 
   function cabeceraVisor(r, conSonido) {
     var son = window.MathKit && window.MathKit.sonido.on;
@@ -164,20 +191,38 @@
       "</div>";
   }
 
-  /** Juegos HTML completos: se cargan en un marco que ocupa el visor. */
-  function jugarHTML(r) {
+  /**
+   * Juegos HTML completos (propios o externos, como GeoGebra): se cargan en un marco que ocupa el visor.
+   * `v` es la versión elegida, si el recurso tiene varias.
+   */
+  function jugarHTML(r, v) {
     pararJuego();
+    var titulo = v ? v.nombre : r.titulo, url = v ? v.url : r.url, respaldo = (v && v.enlace) || url;
     modal.classList.add("modal-juego", "modal-marco");
-    cuerpo.innerHTML = '<div class="visor visor-marco">' + cabeceraVisor(r, false) +
-      '<iframe class="marco-juego" src="' + esc(r.url) + '" title="' + esc(r.titulo) + '" allow="autoplay; fullscreen"></iframe>' +
-      '<p class="aviso">¿No carga? <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Abrir el juego en una pestaña nueva</a>.</p>' +
+    cuerpo.innerHTML = '<div class="visor visor-marco">' + cabeceraVisor({ id: r.id, titulo: titulo }, false) +
+      '<iframe class="marco-juego" title="' + esc(titulo) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>' +
+      '<p class="aviso">¿No carga? <a href="' + esc(respaldo) + '" target="_blank" rel="noopener noreferrer">Abrir en una pestaña nueva</a>.</p>' +
       "</div>";
     if (!modal.open) modal.showModal();
+    var marco = cuerpo.querySelector(".marco-juego");
+    marco.src = urlParaMarco(url, marco.getBoundingClientRect());
+  }
+
+  /**
+   * Las actividades de GeoGebra se incrustan con su visor oficial (/material/iframe/id/…). Si le pasamos el
+   * ancho y el alto del marco, la actividad se escala para caber completa y muestra su botón de pantalla completa.
+   */
+  function urlParaMarco(url, caja) {
+    if (!/geogebra\.org\/material\/iframe\/id\/[^/]+\/?$/.test(url)) return url;
+    return url.replace(/\/$/, "") + "/width/" + Math.floor(caja.width) + "/height/" + Math.floor(caja.height) +
+      "/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false";
   }
 
   /** Abre el visor y monta el juego con el contrato descrito en js/juegos/carrera-tablas.js. */
-  function jugar(id) {
+  function jugar(id, versionId) {
     var r = buscar(id);
+    var v = r && r.versiones && versionId ? r.versiones.filter(function (x) { return x.id === versionId; })[0] : null;
+    if (v) return jugarHTML(r, v);
     if (r && esJuegoHTML(r)) return jugarHTML(r);
     var juego = r && window.MathJuegos && window.MathJuegos[r.url];
     if (!juego) { alertaEnModal("Este juego no está disponible."); return; }
@@ -232,7 +277,7 @@
   /* ---------- Eventos (delegados) ---------- */
   document.addEventListener("click", function (e) {
     var el;
-    if ((el = e.target.closest("[data-jugar]"))) { jugar(el.dataset.jugar); return; }
+    if ((el = e.target.closest("[data-jugar]"))) { jugar(el.dataset.jugar, el.dataset.version); return; }
     if ((el = e.target.closest("#boton-sonido"))) {
       var on = window.MathKit.sonido.alternar();
       el.setAttribute("aria-pressed", on); el.textContent = "Sonido: " + (on ? "sí" : "no");

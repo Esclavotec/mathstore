@@ -73,6 +73,20 @@ const portadas = {
       <g transform="translate(300 175) rotate(20)" fill="#cfd8dc"><path d="M0-5L18 0 0 5z"/><path d="M0-5L18 0 0 5z" transform="rotate(90)"/><path d="M0-5L18 0 0 5z" transform="rotate(180)"/><path d="M0-5L18 0 0 5z" transform="rotate(270)"/></g>
       <g transform="translate(350 240)"><ellipse cy="-10" rx="18" ry="14" fill="#1a1a1a"/><circle cy="-36" r="16" fill="#1a1a1a"/><rect x="-16" y="-44" width="32" height="6" fill="#e5484d"/><path d="M-15-42l-16-8 2 13z" fill="#e5484d"/><rect x="-11" y="-38" width="22" height="7" fill="#f1c7a5"/><rect x="-7" y="-37" width="4" height="4" fill="#1a1a1a"/><rect x="3" y="-37" width="4" height="4" fill="#1a1a1a"/></g>`
   }),
+  "bolsa-cuadrilateros-geogebra": portada({
+    fondo: "#eef2f7", fondo2: "#c9d4e3", tinta: "#1d2733", tam: 38, titulo: "BOLSA DE CUADRILÁTEROS", sub: "ORIGINAL · GEOGEBRA · PROMATES",
+    arte: `<g transform="translate(420 18)">
+        <path d="M20 70 L180 70 L196 206 L4 206 Z" fill="#c99b6a" stroke="#1d2733" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M20 70 L180 70 L178 92 L22 92 Z" fill="#b5854f"/>
+        <path d="M52 72 C52 22 92 22 92 72 M108 72 C108 22 148 22 148 72" fill="none" stroke="#8a6542" stroke-width="8"/>
+        <rect x="40" y="38" width="46" height="46" fill="#5b8def" stroke="#1d2733" stroke-width="4" transform="rotate(-10 63 61)"/>
+        <polygon points="100,30 126,58 100,86 74,58" fill="#f2994a" stroke="#1d2733" stroke-width="4"/>
+        <polygon points="126,46 170,46 160,80 116,80" fill="#2fae6a" stroke="#1d2733" stroke-width="4"/>
+        <text x="100" y="160" text-anchor="middle" font-family="${FUENTE}" font-size="22" fill="#2b1a08">BOLSA</text></g>
+      <g transform="translate(40 40)">
+        <text x="0" y="34" font-family="${FUENTE}" font-size="26" fill="#1d2733">Actividad en GeoGebra</text>
+        <rect x="0" y="70" width="140" height="34" rx="17" fill="#1d2733"/><text x="70" y="93" text-anchor="middle" font-family="Consolas, monospace" font-size="17" fill="#ffd23f" letter-spacing="2">ORIGINAL</text></g>`
+  }),
   geogebra: portada({
     fondo: "#202233", fondo2: "#10111c", tinta: "#eceaf6", titulo: "GEOGEBRA", sub: "CALCULADORA GRÁFICA · WEB",
     arte: `<path d="M40 150H600M320 20V260" stroke="#eceaf6" stroke-opacity="0.4" stroke-width="2"/>
