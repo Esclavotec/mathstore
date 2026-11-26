@@ -157,3 +157,28 @@ test("La tiendita tiene 2 versiones: el original de GeoGebra y la renovada", () 
     assert.ok(existsSync(raiz(v.portada)), `versión ${v.id}: no existe ${v.portada}`);
   }
 });
+
+test("Los 3 juegos propios llevan a Antony Arias Valle como creador", () => {
+  for (const id of ["carrera-tablas", "pizzeria-fracciones", "angulo-ninja"]) {
+    assert.equal(catalogo.find((r) => r.id === id).autor, "Antony Arias Valle", `${id}: falta el creador en el catálogo`);
+    assert.match(readFileSync(raiz(`js/juegos/${id}.js`), "utf8"), /autor: "Antony Arias Valle"/, `${id}: falta «Creado por» en la pantalla de inicio`);
+  }
+});
+
+test("Los HTML sueltos existen, son autosuficientes y llevan el nombre del creador", () => {
+  for (const id of ["carrera-tablas", "pizzeria-fracciones", "angulo-ninja"]) {
+    const ruta = raiz(`descargas/${id}.html`);
+    assert.ok(existsSync(ruta), `falta descargas/${id}.html (ejecuta npm run exportar)`);
+    const html = readFileSync(ruta, "utf8");
+    assert.match(html, /<meta name="author" content="Antony Arias Valle">/);
+    assert.match(html, /Creado por <b>Antony Arias Valle<\/b>/);
+    assert.ok(html.includes(`window.MathJuegos["${id}"]`), `${id}: no trae el código del juego`);
+    assert.ok(html.includes("window.MathKit") && html.includes("MathLogica"), `${id}: no trae el kit o la lógica`);
+    // autosuficiente: ningún <script src> ni hoja de estilos local; solo la fuente opcional de Google
+    assert.ok(!/<script[^>]+src=/.test(html), `${id}: carga scripts externos`);
+    const hojas = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
+    assert.ok(hojas.every((h) => h.startsWith("https://fonts.googleapis.com/")), `${id}: depende de otra hoja de estilos`);
+    // está al día con el código fuente del juego
+    assert.ok(html.includes(readFileSync(raiz(`js/juegos/${id}.js`), "utf8").split("\n").slice(-5).join("\n").trim().slice(0, 40)), `${id}: el HTML está desactualizado (ejecuta npm run exportar)`);
+  }
+});

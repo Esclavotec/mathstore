@@ -58,7 +58,8 @@
     ],
     "edad": "7–11 años",
     "duracion": "5 min",
-    "destacado": true
+    "destacado": true,
+    "autor": "Antony Arias Valle"
   },
   {
     "id": "pizzeria-fracciones",
@@ -76,7 +77,8 @@
     ],
     "edad": "8–12 años",
     "duracion": "6 min",
-    "destacado": true
+    "destacado": true,
+    "autor": "Antony Arias Valle"
   },
   {
     "id": "angulo-ninja",
@@ -94,7 +96,8 @@
     ],
     "edad": "11–14 años",
     "duracion": "5 min",
-    "destacado": true
+    "destacado": true,
+    "autor": "Antony Arias Valle"
   },
   {
     "id": "geogebra",

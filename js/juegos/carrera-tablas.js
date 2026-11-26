@@ -1,5 +1,6 @@
 /*
   Carrera de Tablas (v2)
+  Creado por Antony Arias Valle para MathStore.
   Tu auto avanza con cada multiplicación correcta; el rival avanza solo, cada vez más rápido.
   - 3 carreras (niveles). Ganas una carrera si llegas a la meta antes que el rival.
   - 10 aciertos llegan a la meta. Con 3 aciertos seguidos se activa el TURBO (avanzas más).
@@ -57,6 +58,7 @@
         ],
         extra: '<div class="selector-tablas"><span>Tablas a practicar</span><div>' + chips + '</div></div>',
         boton: "¡Arrancar!",
+        autor: "Antony Arias Valle",
         alEmpezar: function () { empezarPartida(); }
       });
       ctx.escenario.querySelectorAll(".chip-tabla").forEach(function (b) {

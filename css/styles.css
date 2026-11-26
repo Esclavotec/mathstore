@@ -427,3 +427,5 @@ select {
 .version-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 6px; }
 .enlace-externo { color: var(--tiza-azul); font-size: 0.85rem; }
 @media (max-width: 720px) { .versiones-lista { grid-template-columns: minmax(0, 1fr); } }
+.juego-creditos { margin: 0; font-size: 0.85rem; color: var(--tiza-tenue); }
+.juego-creditos b { color: var(--tiza); }

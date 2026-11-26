@@ -15,12 +15,22 @@ También tiene un carrusel de destacados, un buscador (no distingue tildes ni ma
 
 ## Juegos incluidos
 
-| Juego | Tema | Cómo se juega |
-|---|---|---|
-| **La tiendita de los cuadriláteros** (2 versiones) | Geometría | Compra solo paralelogramos, rectángulos o cuadrados. En la ficha eliges la versión:<br/>• **Original**: *Bolsa de cuadrilateros* de José Pablo Calderón Gairaud (PROMATES), en GeoGebra (<https://www.geogebra.org/m/hj3bdkta>).<br/>• **Renovada**: *La tiendita de los cuadriláteros* de Antony Arias, con lupa, teoría, vitrina final y estrellas |
-| **Carrera de Tablas** | Multiplicación | Carrera contra un auto rival. Eliges qué tablas practicar, hay turbo con 3 aciertos seguidos, 3 carreras cada vez más rápidas y 3 vidas |
-| **Pizzería de Fracciones** | Fracciones | Sirves la fracción de pizza que pide cada cliente tocando las porciones. Los niveles 2 y 3 usan fracciones equivalentes. Hay barra de paciencia y propina |
-| **Ángulo Ninja** | Ángulos | Apuntas y lanzas una estrella a la linterna que está al ángulo pedido, sin transportador. El nivel 3 es de lanzamiento libre. Después de cada tiro se dibuja el ángulo real |
+| Juego | Tema | Creador | Cómo se juega |
+|---|---|---|---|
+| **La tiendita de los cuadriláteros** (2 versiones) | Geometría | José Pablo Calderón Gairaud (original) y Antony Arias (renovada) | Compra solo paralelogramos, rectángulos o cuadrados. En la ficha eliges la versión:<br/>• **Original**: *Bolsa de cuadrilateros* de José Pablo Calderón Gairaud (PROMATES), en GeoGebra (<https://www.geogebra.org/m/hj3bdkta>).<br/>• **Renovada**: *La tiendita de los cuadriláteros* de Antony Arias, con lupa, teoría, vitrina final y estrellas |
+| **Carrera de Tablas** | Multiplicación | Antony Arias Valle | Carrera contra un auto rival. Eliges qué tablas practicar, hay turbo con 3 aciertos seguidos, 3 carreras cada vez más rápidas y 3 vidas |
+| **Pizzería de Fracciones** | Fracciones | Antony Arias Valle | Sirves la fracción de pizza que pide cada cliente tocando las porciones. Los niveles 2 y 3 usan fracciones equivalentes. Hay barra de paciencia y propina |
+| **Ángulo Ninja** | Ángulos | Antony Arias Valle | Apuntas y lanzas una estrella a la linterna que está al ángulo pedido, sin transportador. El nivel 3 es de lanzamiento libre. Después de cada tiro se dibuja el ángulo real |
+
+### Descargar los juegos sueltos
+
+Los tres juegos de Antony Arias Valle también existen como **un solo archivo HTML** cada uno. Se abren con doble clic y funcionan sin internet; sin conexión, solo cambian las fuentes por las del sistema.
+
+- `descargas/carrera-tablas.html` · <https://esclavotec.github.io/mathstore/descargas/carrera-tablas.html>
+- `descargas/pizzeria-fracciones.html` · <https://esclavotec.github.io/mathstore/descargas/pizzeria-fracciones.html>
+- `descargas/angulo-ninja.html` · <https://esclavotec.github.io/mathstore/descargas/angulo-ninja.html>
+
+Los genera `npm run exportar` (`tools/exportar-juegos.mjs`) a partir del mismo código de la tienda. Si cambias un juego, vuelve a exportar; un test avisa si algún HTML quedó desactualizado.
 
 Los tres juegos propios comparten un **kit** (`js/juegos/kit.js`) que aporta:
 - pantalla de inicio con instrucciones;
@@ -72,6 +82,7 @@ games/tiendita-cuadrilateros/    juego HTML completo (aportado)
 js/app.js                        interfaz de la tienda
 data/catalogo.json               la lista de recursos
 covers/                          portadas (SVG generadas con tools/generar-portadas.mjs + la imagen de la tiendita)
+descargas/*.html                 los 3 juegos como HTML sueltos (generados con npm run exportar)
 tests/catalogo.test.mjs          tests automáticos
 ```
 
@@ -173,7 +184,7 @@ git push
 
 ## Pruebas realizadas
 
-- **`npm test`: 13 tests en verde.**
+- **`npm test`: 15 tests en verde.**
   - Catálogo: campos completos, ids únicos, portadas, juegos y `<script>` existentes, que no queden PDF, y la tiendita con sus créditos y su portada WebP.
   - Lógica de los juegos, generando cientos de casos por juego:
     - multiplicaciones con las tablas elegidas;
@@ -189,6 +200,18 @@ git push
 - **Navegador, en celular (375 px):** los 4 juegos y la tienda, sin desbordes horizontales.
 
 ## Cambios
+
+### Versión 4
+- **Creador:** Antony Arias Valle figura en Carrera de Tablas, Pizzería de Fracciones y Ángulo Ninja:
+  - en la ficha de la tienda («Créditos»);
+  - en la pantalla de inicio de cada juego («Creado por»);
+  - en la cabecera del código;
+  - en cada HTML suelto (pie y `<meta name="author">`).
+- **Juegos sueltos:** `descargas/*.html`, un archivo por juego que funciona sin la tienda, generado con `npm run exportar`.
+- **2 tests nuevos (15 en total):**
+  - el creador aparece en los tres juegos;
+  - los HTML sueltos existen, no dependen de otros archivos y están al día.
+- **Probado en el navegador:** los tres HTML sueltos cargan sin pedir ningún otro archivo. Jugué una ronda de cada uno y en Carrera usé también «Jugar otra vez».
 
 ### Versión 3
 - **La tiendita ahora tiene 2 versiones en una sola ficha:**

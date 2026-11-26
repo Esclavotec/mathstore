@@ -1,5 +1,6 @@
 /*
   Pizzería de Fracciones
+  Creado por Antony Arias Valle para MathStore.
   Llegan clientes que piden una fracción de pizza ("Quiero 3/4"). La pizza ya está cortada:
   toca las porciones para servirlas y presiona "Servir".
   - Nivel 1: la pizza está cortada igual que el pedido (3/4 → pizza en 4).
@@ -78,6 +79,7 @@
           "Si tardas demasiado, el cliente se va. Sirve rápido para ganar propina."
         ],
         boton: "Abrir la pizzería",
+        autor: "Antony Arias Valle",
         alEmpezar: function () { est = { nivel: 1, cliente: 0, puntos: 0, vidas: 3, bien: 0, total: 0, nivelesOk: 0, fallosNivel: 0 }; montar(); nuevoCliente(); }
       });
       ctx.marcador({});

@@ -1,5 +1,6 @@
 /*
   Ángulo Ninja (v2)
+  Creado por Antony Arias Valle para MathStore.
   El ninja está en el vértice; el suelo hacia la derecha marca 0°. Apunta moviendo el dedo o el ratón
   y toca para lanzar la estrella. No hay transportador: hay que estimar los grados.
   - Nivel 1: 3 linternas muy separadas. Corta la que está al ángulo pedido.
@@ -45,6 +46,7 @@
           "Nivel 3: no hay linternas. Lanza a la medida exacta, con un margen de 10°."
         ],
         boton: "¡A entrenar!",
+        autor: "Antony Arias Valle",
         alEmpezar: function () { est = { nivel: 1, ronda: 0, puntos: 0, vidas: 3, aciertos: 0, total: 0, niveles: 0 }; montar(); nuevaRonda(); }
       });
       ctx.marcador({});

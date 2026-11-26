@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test tests/catalogo.test.mjs",
     "portadas": "node tools/generar-portadas.mjs",
+    "exportar": "node tools/exportar-juegos.mjs",
     "start": "python -m http.server 8000"
   }
 }

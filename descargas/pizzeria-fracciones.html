@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzería de Fracciones · MathStore</title>
+<meta name="author" content="Antony Arias Valle">
+<meta name="description" content="Atiende a los clientes de la pizzería: cada uno pide una fracción de pizza y tú tocas las porciones para servirla. En el nivel 2 la pizza viene cortada en más partes y en el nivel 3 los pedidos llegan sin simplificar, así que hay que pensar en fracciones equivalentes. Si sirves rápido, ganas propina.">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPCEtLSBMb2dvIGRlIE1hdGhTdG9yZTogbWFuemFuYSByb2phIGNvbiB1biBndXNhbm8gdmVyZGUgcXVlIHNlIGFzb21hIHBvciBzdSBhZ3VqZXJvIC0tPgogIDxwYXRoIGQ9Ik0zMiAxOGMtNC00LTEyLTUtMTctMS03IDUtNyAxNy0zIDI2IDMgNyA4IDEzIDE0IDEzIDMgMCA0LTIgNi0yczMgMiA2IDJjNiAwIDExLTYgMTQtMTMgNC05IDQtMjEtMy0yNi01LTQtMTMtMy0xNyAxeiIgZmlsbD0iI2U1NDg0ZCIvPgogIDxwYXRoIGQ9Ik0yMCAyMmMtMyAyLTUgNi01IDEwIiBzdHJva2U9IiNmZjhmOTMiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMzIgMThjMC01IDEtOSA0LTEyIiBzdHJva2U9IiM2YjNlMWYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+CiAgPHBhdGggZD0iTTM1IDExYzQtNSAxMS02IDE1LTMtMyA1LTEwIDctMTUgM3oiIGZpbGw9IiM0Y2FmNTAiLz4KICA8ZWxsaXBzZSBjeD0iNDQiIGN5PSIzNyIgcng9IjUuNSIgcnk9IjUiIGZpbGw9IiM3YTFkMjIiLz4KICA8cGF0aCBkPSJNNDQgMzhjMi03IDktOSAxMy01IDMgMyAxIDgtMyA4IiBzdHJva2U9IiM4ZmRjNWEiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+CiAgPGNpcmNsZSBjeD0iNTUuNSIgY3k9IjM0IiByPSIxLjYiIGZpbGw9IiMxNDIxMWQiLz4KPC9zdmc+Cg==">
+<!-- Fuentes: si no hay internet se usan las del sistema y el juego funciona igual -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/*
+  MathStore · estilos
+  Dirección: una tienda oscura con aire de pizarra de aula. Fondo verde pizarra
+  con cuadrícula de papel milimetrado muy tenue, texto color tiza y un acento
+  amarillo tiza. Es un tema oscuro único y deliberado (no cambia con el tema del sistema).
+  Layout: barra fija → carrusel destacado → filtros → rejilla de tarjetas → modal.
+*/
+:root {
+  /* Color */
+  --pizarra: #14211d;          /* fondo principal */
+  --pizarra-2: #1b2c27;        /* superficies (tarjetas, barra) */
+  --pizarra-3: #24392f;        /* superficies elevadas, hover */
+  --linea: #2f4a3f;            /* bordes y cuadrícula */
+  --tiza: #e9efe9;             /* texto principal */
+  --tiza-tenue: #a3b5ab;       /* texto secundario */
+  --tiza-amarilla: #f2cf5b;    /* acento: botones principales */
+  --tiza-azul: #7cc4e8;        /* tipo "web" */
+  --tiza-rosa: #ef8f9c;        /* tipo "descargar" */
+  --tiza-verde: #8fdc9e;       /* tipo "jugar" */
+
+  /* Tipografía */
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-dato: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --radio: 10px;
+  /* Curvas de animación (fuertes, para UI) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--pizarra); }
+body {
+  margin: 0;
+  background-color: var(--pizarra);
+  /* papel milimetrado muy tenue */
+  background-image:
+    linear-gradient(var(--pizarra-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--pizarra-2) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--tiza);
+  font: 15px/1.55 var(--f-texto);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--tiza-amarilla); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+
+/* ---------- Barra superior ---------- */
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--pizarra-2);
+}
+.barra {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--pizarra-2) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--linea);
+}
+.barra-in {
+  max-width: 1180px; margin: 0 auto;
+  padding-block: 12px; padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+}
+.marca {
+  display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--tiza);
+  font: 700 1.35rem var(--f-display); letter-spacing: -0.01em;
+}
+.marca b { color: var(--tiza-amarilla); font-weight: 800; }
+.logo-manzana { transform-origin: 50% 90%; transition: transform 200ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .marca:hover .logo-manzana { transform: rotate(-8deg) scale(1.06); } }
+.buscar {
+  flex: 1 1 260px; display: flex; align-items: center; gap: 8px;
+  background: var(--pizarra); border: 1px solid var(--linea); border-radius: 999px;
+  padding: 8px 14px; color: var(--tiza-tenue);
+}
+.buscar:focus-within { border-color: var(--tiza-amarilla); }
+.buscar input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--tiza); }
+.buscar input::placeholder { color: var(--tiza-tenue); }
+
+/* ---------- Contenido ---------- */
+.contenido {
+  max-width: 1180px; margin: 0 auto;
+  padding-block: 24px 48px; padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  display: grid; gap: 28px;
+}
+
+/* ---------- Carrusel destacado ---------- */
+.destacados { display: grid; gap: 12px; }
+.destacado {
+  display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  background: var(--pizarra-2); border: 1px solid var(--linea); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.7);
+}
+.destacado-portada { cursor: pointer; border: 0; padding: 0; background: none; }
+.destacado-portada img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.destacado-info { padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.destacado-info .sobre { font: 500 0.72rem var(--f-dato); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tiza-amarilla); }
+.destacado-info h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -0.02em; }
+.destacado-info p { margin: 0; color: var(--tiza-tenue); }
+.destacado-info .acciones { margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+.carrusel-nav { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.flecha {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--linea);
+  background: var(--pizarra-2); cursor: pointer; font-size: 1.3rem; line-height: 1;
+}
+.flecha:hover { background: var(--pizarra-3); }
+.puntos { display: flex; gap: 6px; }
+.punto { width: 22px; height: 6px; border-radius: 3px; border: 0; background: var(--linea); cursor: pointer; padding: 0; }
+.punto[aria-current="true"] { background: var(--tiza-amarilla); }
+
+/* ---------- Filtros ---------- */
+.filtros {
+  display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center;
+  padding: 14px 16px; background: var(--pizarra-2); border: 1px solid var(--linea); border-radius: var(--radio);
+}
+.grupo-filtro { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.etiqueta-filtro { font: 500 0.7rem var(--f-dato); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tiza-tenue); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--linea); background: transparent; border-radius: 999px;
+  padding: 4px 12px; cursor: pointer; font-size: 0.85rem; color: var(--tiza-tenue);
+}
+.chip:hover { color: var(--tiza); border-color: var(--tiza-tenue); }
+.chip[aria-pressed="true"] { background: var(--tiza); color: var(--pizarra); border-color: var(--tiza); font-weight: 600; }
+select {
+  background: var(--pizarra); border: 1px solid var(--linea); border-radius: 8px; padding: 5px 10px;
+}
+
+/* ---------- Rejilla de tarjetas ---------- */
+.cabecera-catalogo { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.cabecera-catalogo h2 { font-size: 1.45rem; font-weight: 700; }
+.contador { font: 500 0.8rem var(--f-dato); color: var(--tiza-tenue); font-variant-numeric: tabular-nums; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.tarjeta {
+  display: flex; flex-direction: column; text-align: left; padding: 0; cursor: pointer;
+  background: var(--pizarra-2); border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden;
+  transition: transform 160ms ease-out, border-color 160ms ease-out, box-shadow 160ms ease-out;
+}
+.tarjeta img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.tarjeta-info { padding: 12px 14px 14px; display: grid; gap: 6px; min-width: 0; }
+.tarjeta h3 { font-size: 1.05rem; font-weight: 700; }
+.tarjeta { min-width: 0; }
+.tarjeta .meta { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--tiza-tenue); }
+.tarjeta .meta > span:first-child { min-width: 0; }
+@media (hover: hover) {
+  .tarjeta:hover { transform: translateY(-3px); border-color: var(--tiza-tenue); box-shadow: 0 14px 30px -16px rgb(0 0 0 / 0.8); }
+}
+.tarjeta:active { transform: scale(0.98); }
+.vacio { color: var(--tiza-tenue); padding: 30px; text-align: center; border: 1px dashed var(--linea); border-radius: var(--radio); }
+
+/* Insignia del tipo de recurso: el color también indica el tipo */
+.tipo {
+  font: 500 0.68rem var(--f-dato); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap;
+}
+.tipo-jugar { color: var(--tiza-verde); }
+.tipo-descargar { color: var(--tiza-rosa); }
+.tipo-web { color: var(--tiza-azul); }
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  padding: 10px 18px; border-radius: 8px; border: 0; cursor: pointer; text-decoration: none;
+  font-weight: 600; transition: transform 120ms ease-out, filter 120ms ease-out;
+}
+.boton:active { transform: scale(0.97); }
+.boton-principal { background: var(--tiza-amarilla); color: var(--pizarra); }
+.boton-principal:hover { filter: brightness(1.08); }
+.boton-secundario { background: var(--pizarra-3); color: var(--tiza); border: 1px solid var(--linea); }
+.boton-secundario:hover { background: var(--linea); }
+
+/* ---------- Modal de detalle ---------- */
+.modal {
+  width: min(880px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0;
+  background: var(--pizarra-2); color: var(--tiza);
+  border: 1px solid var(--linea); border-radius: 14px; overflow: auto;
+}
+.modal::backdrop { background: rgb(5 10 8 / 0.75); backdrop-filter: blur(3px); }
+.modal[open] { animation: aparecer 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes aparecer { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+.cerrar {
+  position: sticky; top: 10px; float: right; margin: 10px 10px -44px 0; z-index: 2;
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--linea);
+  background: var(--pizarra); cursor: pointer; font-size: 1.3rem; line-height: 1;
+}
+.detalle-portada { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.detalle-info { padding: 22px 24px 26px; display: grid; gap: 14px; }
+.detalle-info h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.02em; }
+.detalle-info p { margin: 0; max-width: 65ch; }
+.ficha { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; font-size: 0.85rem; }
+.ficha div { display: flex; gap: 6px; }
+.ficha dt { color: var(--tiza-tenue); }
+.ficha dd { margin: 0; font-weight: 600; }
+.etiquetas { display: flex; flex-wrap: wrap; gap: 6px; }
+.etiquetas span { font-size: 0.78rem; background: var(--pizarra-3); border-radius: 4px; padding: 2px 8px; color: var(--tiza-tenue); }
+.aviso { font-size: 0.8rem; color: var(--tiza-tenue); }
+
+/* ---------- Visor de juego ---------- */
+.modal.modal-juego { width: min(1040px, calc(100vw - 24px)); }
+.modal.modal-marco { height: calc(100dvh - 24px); overflow: hidden; }
+.visor { padding: 16px 18px 20px; display: grid; gap: 14px; }
+.visor-marco { height: 100%; grid-template-rows: auto minmax(0, 1fr) auto; }
+.marco-juego { width: 100%; height: 100%; border: 0; border-radius: var(--radio); background: #fbfdff; }
+.visor-cabecera { display: flex; align-items: center; gap: 10px 14px; padding-right: 40px; flex-wrap: wrap; }
+.visor-cabecera h2 { font-size: 1.3rem; }
+.marcador { display: flex; gap: 6px 16px; margin-left: auto; flex-wrap: wrap; font: 500 0.88rem var(--f-dato); font-variant-numeric: tabular-nums; color: var(--tiza-tenue); }
+.marcador span b { color: var(--tiza-amarilla); }
+.boton-sonido { padding: 6px 12px; font-size: 0.85rem; }
+.escenario {
+  position: relative; overflow: hidden;
+  background: var(--pizarra); border: 1px solid var(--linea); border-radius: var(--radio);
+  min-height: 440px;
+}
+.boton-grande { padding: 14px 30px; font-size: 1.1rem; border-radius: 10px; }
+
+/* Pantalla de inicio de cada juego */
+.juego-intro { max-width: 560px; margin: 0 auto; padding: 32px 22px; display: grid; gap: 14px; justify-items: start; }
+.juego-intro h3 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; color: var(--tiza-amarilla); }
+.juego-intro-sub { margin: -6px 0 0; color: var(--tiza-tenue); font-size: 1.05rem; }
+.juego-pasos { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.juego-pasos li::marker { color: var(--tiza-amarilla); font-weight: 700; }
+.selector-tablas { display: grid; gap: 8px; }
+.selector-tablas > span { font: 500 0.72rem var(--f-dato); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tiza-tenue); }
+.selector-tablas > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-tabla {
+  width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--linea); background: var(--pizarra-2);
+  font: 700 1.05rem var(--f-dato); cursor: pointer; transition: transform 120ms var(--ease-out), background-color 150ms ease;
+}
+.chip-tabla[aria-pressed="true"] { background: var(--tiza-amarilla); color: var(--pizarra); border-color: var(--tiza-amarilla); }
+.chip-tabla:active { transform: scale(0.94); }
+
+/* Texto flotante y confeti */
+.flotante {
+  position: absolute; z-index: 6; pointer-events: none; transform: translate(-50%, 0);
+  font: 800 1.3rem var(--f-display); color: var(--tiza-amarilla); text-shadow: 0 2px 0 rgb(0 0 0 / 0.5);
+  animation: flotar 900ms var(--ease-out) forwards;
+}
+.flotante.bien { color: var(--tiza-verde); }
+@keyframes flotar { from { opacity: 0; transform: translate(-50%, 8px); } 20% { opacity: 1; } to { opacity: 0; transform: translate(-50%, -48px); } }
+.confeti {
+  position: absolute; top: -12px; width: 8px; height: 12px; z-index: 7; pointer-events: none; border-radius: 2px;
+  animation: confeti 1.4s var(--ease-out) forwards;
+}
+@keyframes confeti { to { transform: translate(var(--dx), 520px) rotate(var(--giro)); opacity: 0; } }
+
+/* Aviso entre niveles */
+.aviso-nivel {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 10px;
+  padding: 24px; text-align: center; background: rgb(10 18 15 / 0.82); backdrop-filter: blur(4px);
+  animation: aparecer 220ms var(--ease-out);
+}
+.aviso-nivel h3 { font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--tiza-amarilla); }
+.aviso-nivel p { margin: 0; color: var(--tiza); max-width: 42ch; }
+.aviso-nivel .boton { margin-top: 8px; }
+
+/* Pantalla final */
+.resultado { min-height: 440px; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 28px; text-align: center; }
+.resultado h3 { font-size: 1.9rem; }
+.resultado p { margin: 0; color: var(--tiza-tenue); max-width: 46ch; }
+.estrellas-fin { display: flex; gap: 10px; font-size: 3.2rem; line-height: 1; margin: 0 !important; }
+.estrellas-fin span { color: var(--linea); }
+.estrellas-fin span.llena { color: var(--tiza-amarilla); animation: estrella 420ms var(--ease-out) backwards; animation-delay: calc(var(--i) * 140ms + 120ms); }
+@keyframes estrella { from { opacity: 0; transform: scale(0.6) rotate(-20deg); } }
+.puntos-fin { font: 800 3rem var(--f-display) !important; color: var(--tiza) !important; font-variant-numeric: tabular-nums; }
+.puntos-fin span { font-size: 1rem; color: var(--tiza-tenue); }
+
+/* Opciones de respuesta (Carrera) */
+.pregunta { font: 800 clamp(2.4rem, 8vw, 4rem) var(--f-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; text-align: center; }
+.pregunta.entra { animation: entrar 220ms var(--ease-out); }
+@keyframes entrar { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+.opciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(460px, 100%); }
+.opcion {
+  position: relative; padding: 16px 12px; border-radius: 10px; border: 1px solid var(--linea); background: var(--pizarra-2);
+  font: 700 1.6rem var(--f-dato); cursor: pointer; font-variant-numeric: tabular-nums;
+  transition: transform 120ms var(--ease-out), border-color 150ms ease, background-color 150ms ease;
+}
+.opcion small { position: absolute; top: 6px; left: 9px; font-size: 0.7rem; color: var(--tiza-tenue); }
+@media (hover: hover) and (pointer: fine) { .opcion:hover { border-color: var(--tiza-tenue); } }
+.opcion:active { transform: scale(0.96); }
+.opcion.bien { background: color-mix(in srgb, var(--tiza-verde) 28%, var(--pizarra-2)); border-color: var(--tiza-verde); }
+.opcion.mal { background: color-mix(in srgb, var(--tiza-rosa) 28%, var(--pizarra-2)); border-color: var(--tiza-rosa); }
+
+/* ===== Carrera de Tablas ===== */
+.carrera { display: grid; gap: 18px; padding: 18px; min-height: 440px; align-content: start; }
+.pista {
+  position: relative; border-radius: 10px; overflow: hidden; padding: 8px 0;
+  background: #2a2f2d;
+  box-shadow: inset 0 4px 0 #c9cfcb, inset 0 -4px 0 #c9cfcb;
+}
+.carril { position: relative; height: 62px; }
+.carril + .carril { background-image: linear-gradient(90deg, #e9efe9 50%, transparent 0); background-size: 34px 3px; background-repeat: repeat-x; background-position: 0 0; }
+.carril-nombre { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font: 600 0.7rem var(--f-dato); color: #c9cfcb; text-transform: uppercase; letter-spacing: 0.08em; }
+.auto { position: absolute; left: 44px; top: 6px; width: 104px; will-change: transform; }
+.auto svg { width: 100%; height: auto; }
+.auto-jugador { transition: transform 320ms var(--ease-out); }
+.linea-meta {
+  position: absolute; top: 0; bottom: 0; right: 0; width: 22px;
+  background: conic-gradient(#fff 25%, #111 0 50%, #fff 0 75%, #111 0) 0 0 / 11px 11px;
+}
+.turbo-fuego {
+  position: absolute; left: -22px; top: 26px; width: 26px; height: 12px; border-radius: 50% 0 0 50%;
+  background: linear-gradient(90deg, transparent, #ffb02e 40%, #ff5a36); opacity: 0; transform: scaleX(0.4); transform-origin: right;
+  transition: opacity 150ms ease, transform 200ms var(--ease-out);
+}
+.con-turbo .turbo-fuego { opacity: 1; transform: scaleX(1); animation: llama 160ms linear infinite alternate; }
+@keyframes llama { to { transform: scaleX(0.75); } }
+.derrape > svg { animation: derrape 420ms var(--ease-out); }
+@keyframes derrape { 25% { transform: rotate(-8deg) translateX(-6px); } 60% { transform: rotate(5deg); } }
+.carrera-centro { position: relative; display: grid; justify-items: center; gap: 14px; }
+.cuenta { position: absolute; top: -6px; z-index: 2; font: 800 4rem var(--f-display); color: var(--tiza-amarilla); pointer-events: none; }
+.cuenta.pulso { animation: pulso 600ms var(--ease-out); }
+@keyframes pulso { from { opacity: 0; transform: scale(1.4); } 30% { opacity: 1; transform: scale(1); } }
+.estado-turbo { min-height: 1.4em; font-weight: 600; color: var(--tiza-amarilla); }
+
+/* ===== Pizzería de Fracciones ===== */
+.pizzeria {
+  --tabla: #6b4a2b; --tabla-borde: #4e341d;
+  display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; padding: 18px; min-height: 440px; align-items: center;
+}
+.mostrador { display: grid; place-items: center; }
+.cliente { display: grid; justify-items: center; gap: 10px; }
+.cliente.llega { animation: llega 360ms var(--ease-out); }
+.cliente.se-va { opacity: 0; transform: translateX(-30px); transition: opacity 220ms ease, transform 220ms var(--ease-out); }
+@keyframes llega { from { opacity: 0; transform: translateX(40px); } }
+.cliente-cara svg { width: 120px; height: 120px; }
+.globo {
+  position: relative; display: grid; justify-items: center; gap: 6px; padding: 14px 22px 16px; min-width: 200px;
+  background: var(--tiza); color: var(--pizarra); border-radius: 18px;
+}
+.globo::before { content: ""; position: absolute; top: -10px; left: 50%; margin-left: -10px; border: 10px solid transparent; border-top: 0; border-bottom-color: var(--tiza); }
+.cliente-nombre { font-size: 0.85rem; font-weight: 600; }
+.pedido { display: flex; align-items: center; gap: 10px; }
+.pedido-texto { font-weight: 600; }
+.frac { display: inline-grid; justify-items: center; font: 800 2.2rem/1 var(--f-display); }
+.frac span:first-child { border-bottom: 4px solid currentColor; padding: 0 6px 4px; }
+.frac span:last-child { padding-top: 4px; }
+.paciencia { width: 100%; height: 8px; border-radius: 4px; background: #cfd8d3; overflow: hidden; }
+.paciencia i { display: block; height: 100%; background: #3f9d5a; transform-origin: left; transition: background-color 300ms ease; }
+.paciencia i.poca { background: #d64545; }
+.cocina { display: grid; justify-items: center; gap: 10px; }
+.pizza { width: min(330px, 100%); height: auto; touch-action: manipulation; }
+.porcion { cursor: pointer; outline: none; }
+.porcion .hueco { fill: rgb(0 0 0 / 0.12); stroke: #d9c3a5; stroke-width: 1.5; stroke-dasharray: 5 5; }
+@media (hover: hover) and (pointer: fine) { .porcion:hover .hueco { fill: rgb(255 255 255 / 0.12); } }
+.porcion:focus-visible .hueco { stroke: var(--tiza-amarilla); stroke-width: 3; stroke-dasharray: none; }
+.porcion .rebanada {
+  opacity: 0; transform: scale(0.82); transform-box: fill-box; transform-origin: center;
+  transition: opacity 160ms ease, transform 220ms var(--ease-out);
+  stroke: #9c6b35; stroke-width: 1.5;
+}
+.porcion.puesta .rebanada { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
+.conteo { margin: 0; font: 500 0.95rem var(--f-dato); color: var(--tiza-tenue); font-variant-numeric: tabular-nums; }
+.acciones-pizza { display: flex; gap: 10px; }
+.acciones-pizza .boton { min-width: 120px; }
+.explicacion { margin: 0; min-height: 1.5em; text-align: center; font-weight: 600; }
+.explicacion.bien { color: var(--tiza-verde); }
+.explicacion.mal { color: var(--tiza-rosa); }
+.temblor { animation: temblor 380ms var(--ease-out); }
+@keyframes temblor { 20% { transform: translateX(-6px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
+
+/* ===== Ángulo Ninja ===== */
+.ninja { display: grid; gap: 12px; padding: 16px; min-height: 440px; align-content: start; }
+.orden { margin: 0; text-align: center; font: 700 clamp(1.1rem, 3.5vw, 1.5rem) var(--f-display); }
+.orden .grados { color: var(--tiza-amarilla); font-size: 1.4em; font-variant-numeric: tabular-nums; }
+.lienzo-caja { position: relative; }
+.lienzo-caja canvas { display: block; width: 100%; border-radius: 10px; cursor: crosshair; touch-action: none; }
+
+@media (max-width: 720px) {
+  .pizzeria { grid-template-columns: minmax(0, 1fr); }
+  .cliente { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+  .cliente-cara svg { width: 72px; height: 72px; }
+  .globo { min-width: 0; padding: 10px 14px 12px; }
+  .frac { font-size: 1.8rem; }
+  .acciones-pizza .boton { min-width: 0; flex: 1; }
+  .globo::before { top: 50%; left: -10px; margin: -10px 0 0; border: 10px solid transparent; border-left: 0; border-right-color: var(--tiza); }
+  .visor { padding: 12px; }
+  .carrera, .ninja, .pizzeria { padding: 12px; }
+  .auto { width: 84px; }
+}
+
+/* ---------- Pie ---------- */
+.pie {
+  border-top: 1px solid var(--linea); color: var(--tiza-tenue); font-size: 0.8rem; text-align: center;
+  padding-block: 18px; padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+}
+.pie p { margin: 0; }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 720px) {
+  .destacado { grid-template-columns: minmax(0, 1fr); }
+  .rejilla { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .detalle-info { padding: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- Juegos con varias versiones (original / renovada) ---------- */
+.insignias { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.tipo-versiones { color: var(--tiza-amarilla); }
+.versiones { display: grid; gap: 12px; }
+.versiones h3 { font-size: 1.15rem; }
+.versiones-lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.version {
+  display: grid; grid-template-rows: auto 1fr; min-width: 0; overflow: hidden;
+  background: var(--pizarra); border: 1px solid var(--linea); border-radius: var(--radio);
+  transition: border-color 150ms ease;
+}
+@media (hover: hover) and (pointer: fine) { .version:hover { border-color: var(--tiza-tenue); } }
+.version img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.version-info { display: grid; gap: 6px; align-content: start; padding: 12px 14px 14px; }
+.version-etiqueta {
+  justify-self: start; font: 500 0.68rem var(--f-dato); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 4px; border: 1px solid currentColor; color: var(--tiza-verde);
+}
+.version-original .version-etiqueta { color: var(--tiza-azul); }
+.version h4 { margin: 0; font: 700 1.1rem/1.2 var(--f-display); text-wrap: balance; }
+.version p { margin: 0; font-size: 0.88rem; color: var(--tiza-tenue); }
+.version .version-autor { color: var(--tiza); font-weight: 600; }
+.version-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 6px; }
+.enlace-externo { color: var(--tiza-azul); font-size: 0.85rem; }
+@media (max-width: 720px) { .versiones-lista { grid-template-columns: minmax(0, 1fr); } }
+.juego-creditos { margin: 0; font-size: 0.85rem; color: var(--tiza-tenue); }
+.juego-creditos b { color: var(--tiza); }
+
+/* ---------- Página suelta del juego ---------- */
+.juego-suelto { max-width: 1040px; margin: 0 auto; padding-block: 16px 28px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+.juego-suelto .visor-cabecera { padding-right: 0; }
+.juego-suelto .visor-cabecera img { width: 34px; height: 34px; }
+.juego-suelto h1 { font-size: clamp(1.3rem, 3.5vw, 1.8rem); font-weight: 800; }
+.pie-juego { text-align: center; color: var(--tiza-tenue); font-size: 0.85rem; margin: 0; }
+.pie-juego b { color: var(--tiza); }
+</style>
+</head>
+<body>
+<!--
+  Pizzería de Fracciones: creado por Antony Arias Valle para MathStore.
+  Archivo generado con "npm run exportar" (tools/exportar-juegos.mjs). Para cambiar el juego,
+  edita js/juegos/pizzeria-fracciones.js en el proyecto y vuelve a exportar.
+-->
+<main class="juego-suelto">
+  <div class="visor-cabecera">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPCEtLSBMb2dvIGRlIE1hdGhTdG9yZTogbWFuemFuYSByb2phIGNvbiB1biBndXNhbm8gdmVyZGUgcXVlIHNlIGFzb21hIHBvciBzdSBhZ3VqZXJvIC0tPgogIDxwYXRoIGQ9Ik0zMiAxOGMtNC00LTEyLTUtMTctMS03IDUtNyAxNy0zIDI2IDMgNyA4IDEzIDE0IDEzIDMgMCA0LTIgNi0yczMgMiA2IDJjNiAwIDExLTYgMTQtMTMgNC05IDQtMjEtMy0yNi01LTQtMTMtMy0xNyAxeiIgZmlsbD0iI2U1NDg0ZCIvPgogIDxwYXRoIGQ9Ik0yMCAyMmMtMyAyLTUgNi01IDEwIiBzdHJva2U9IiNmZjhmOTMiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KICA8cGF0aCBkPSJNMzIgMThjMC01IDEtOSA0LTEyIiBzdHJva2U9IiM2YjNlMWYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+CiAgPHBhdGggZD0iTTM1IDExYzQtNSAxMS02IDE1LTMtMyA1LTEwIDctMTUgM3oiIGZpbGw9IiM0Y2FmNTAiLz4KICA8ZWxsaXBzZSBjeD0iNDQiIGN5PSIzNyIgcng9IjUuNSIgcnk9IjUiIGZpbGw9IiM3YTFkMjIiLz4KICA8cGF0aCBkPSJNNDQgMzhjMi03IDktOSAxMy01IDMgMyAxIDgtMyA4IiBzdHJva2U9IiM4ZmRjNWEiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+CiAgPGNpcmNsZSBjeD0iNTUuNSIgY3k9IjM0IiByPSIxLjYiIGZpbGw9IiMxNDIxMWQiLz4KPC9zdmc+Cg==" alt="">
+    <h1>Pizzería de Fracciones</h1>
+    <div class="marcador" id="marcador"></div>
+    <button type="button" class="boton boton-secundario boton-sonido" id="boton-sonido" aria-pressed="true">Sonido: sí</button>
+  </div>
+  <div class="escenario" id="escenario"></div>
+  <p class="pie-juego">Creado por <b>Antony Arias Valle</b> · MathStore · Fracciones, primaria</p>
+</main>
+<script>
+/*
+  logica.js: funciones puras (sin DOM) que usan los juegos y la tienda.
+  Funciona en el navegador (window.MathLogica) y en Node (module.exports),
+  así los tests automáticos pueden comprobarlas sin abrir un navegador.
+*/
+(function (raiz) {
+  "use strict";
+
+  /** Entero aleatorio entre min y max (ambos incluidos). `azar` permite inyectar un generador en los tests. */
+  function entero(min, max, azar) {
+    var r = (azar || Math.random)();
+    return min + Math.floor(r * (max - min + 1));
+  }
+
+  /** Mezcla una copia del arreglo (Fisher–Yates). */
+  function mezclar(lista, azar) {
+    var a = lista.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = entero(0, i, azar);
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /**
+   * Carrera de Tablas: crea una multiplicación con 4 opciones distintas,
+   * una correcta y tres distractores "creíbles" (vecinos en la tabla).
+   */
+  function generarMultiplicacion(azar, tablas) {
+    // `tablas` (opcional) limita el primer factor, p. ej. [6, 7] para practicar solo esas tablas
+    var a = tablas && tablas.length ? tablas[entero(0, tablas.length - 1, azar)] : entero(2, 10, azar);
+    var b = entero(2, 10, azar);
+    if ((azar || Math.random)() < 0.5) { var t = a; a = b; b = t; } // a veces 8 × 7, a veces 7 × 8
+    var correcta = a * b;
+    var candidatos = [correcta + a, correcta - a, correcta + b, correcta - b, correcta + 1, correcta - 1, (a + 1) * (b + 1)];
+    var opciones = [correcta];
+    for (var i = 0; i < candidatos.length && opciones.length < 4; i++) {
+      var c = candidatos[i];
+      if (c > 0 && opciones.indexOf(c) === -1) opciones.push(c);
+    }
+    return { a: a, b: b, correcta: correcta, opciones: mezclar(opciones, azar) };
+  }
+
+  /** Compara dos fracciones n1/d1 y n2/d2 sin decimales: devuelve 1, -1 o 0. */
+  function compararFracciones(n1, d1, n2, d2) {
+    var izq = n1 * d2, der = n2 * d1;
+    return izq > der ? 1 : izq < der ? -1 : 0;
+  }
+
+  /** Ángulo Ninja: puntos por ronda según el error en grados (100 si aciertas exacto, 0 si fallas por 50° o más). */
+  function puntajeAngulo(real, estimado) {
+    var error = Math.abs(real - estimado);
+    return Math.max(0, Math.round(100 - error * 2));
+  }
+
+  /* ===== Carrera de Tablas ===== */
+
+  /** Segundos que tarda el auto rival en llegar a la meta en cada nivel (1, 2, 3). */
+  function segundosRival(nivel) { return [0, 55, 42, 32][nivel] || 32; }
+
+  /** Avance del jugador (0–1) por respuesta: 10 aciertos llegan a la meta; con turbo (racha ≥ 3) se avanza 1,5 veces. */
+  function avanceJugador(racha) { return racha >= 3 ? 0.15 : 0.1; }
+
+  /* ===== Pizzería de Fracciones ===== */
+
+  function mcd(a, b) { while (b) { var t = b; b = a % b; a = t; } return a; }
+  function simplificar(n, d) { var m = mcd(n, d); return [n / m, d / m]; }
+
+  /**
+   * Un pedido: el cliente pide num/den de pizza y la pizza viene cortada en `porciones`.
+   *  Nivel 1: la pizza se corta igual que el pedido (pide 3/4, pizza en 4).
+   *  Nivel 2: pizza cortada en un múltiplo (pide 1/2, pizza en 4, 6 u 8): hay que pensar en equivalentes.
+   *  Nivel 3: el pedido puede venir "sin simplificar" y la pizza en menos porciones (pide 6/8, pizza en 4).
+   */
+  function generarPedido(nivel, azar) {
+    var dens = [2, 3, 4, 6, 8];
+    var den = dens[entero(0, dens.length - 1, azar)], num = entero(1, den - 1, azar), porciones = den;
+    // Las pizzas nunca tienen más de 12 porciones: más finas serían difíciles de tocar.
+    var CORTES = [2, 3, 4, 6, 8, 12];
+    if (nivel === 2) {
+      var opciones;
+      do {                                             // pedido simplificado (1/2, 2/3, 3/4…) y pizza en más partes
+        den = [2, 3, 4, 6][entero(0, 3, azar)]; num = entero(1, den - 1, azar);
+        var s = simplificar(num, den); num = s[0]; den = s[1];
+        opciones = CORTES.filter(function (p) { return p % den === 0 && p > den; });
+      } while (!opciones.length);
+      porciones = opciones[entero(0, opciones.length - 1, azar)];
+    } else if (nivel >= 3) {
+      var base, opc, k;
+      do {                                             // pedido "grande" (6/8, 4/6…) y pizza en menos partes
+        den = [2, 3, 4][entero(0, 2, azar)]; num = entero(1, den - 1, azar);
+        base = simplificar(num, den); k = entero(2, 3, azar);
+        num = base[0] * k; den = base[1] * k;
+        opc = CORTES.filter(function (p) { return p % base[1] === 0 && p < den; });
+      } while (!opc.length);
+      porciones = opc[entero(0, opc.length - 1, azar)];
+    }
+    return { num: num, den: den, porciones: porciones, necesarias: num * porciones / den };
+  }
+
+  /** ¿Las porciones elegidas forman exactamente num/den de la pizza? */
+  function pedidoCorrecto(elegidas, porciones, num, den) { return elegidas * den === num * porciones; }
+
+  /* ===== Ángulo Ninja ===== */
+
+  /** Ángulo (0–180°) de un punto respecto al vértice; dy positivo hacia arriba. */
+  function anguloDesde(dx, dy) {
+    var g = Math.atan2(Math.max(dy, 0), dx) * 180 / Math.PI;
+    return Math.max(0, Math.min(180, g));
+  }
+
+  /**
+   * Linternas para los niveles 1 y 2: `cantidad` ángulos entre 15° y 165° separados al menos `separacion`
+   * grados, y el índice de la que hay que cortar.
+   */
+  function generarLinternas(cantidad, separacion, azar) {
+    var angs = [], intentos = 0;
+    while (angs.length < cantidad && intentos++ < 500) {
+      var a = entero(3, 33, azar) * 5; // múltiplos de 5 entre 15 y 165
+      if (angs.every(function (b) { return Math.abs(a - b) >= separacion; })) angs.push(a);
+    }
+    angs.sort(function (x, y) { return x - y; });
+    return { angulos: angs, objetivo: entero(0, angs.length - 1, azar) };
+  }
+
+  /** Índice de la linterna alcanzada al lanzar a `lanzado` grados (a ≤ `margen`°), o -1 si no toca ninguna. */
+  function linternaAlcanzada(angulos, lanzado, margen) {
+    var mejor = -1, dist = Infinity;
+    angulos.forEach(function (a, i) { var d = Math.abs(a - lanzado); if (d <= margen && d < dist) { dist = d; mejor = i; } });
+    return mejor;
+  }
+
+  /** Estrellas (0–3) según niveles superados. */
+  function estrellas(nivelesSuperados) { return Math.max(0, Math.min(3, nivelesSuperados)); }
+
+  /** Clasifica un ángulo en grados con el nombre que se usa en clase. */
+  function tipoAngulo(g) {
+    if (g < 90) return "agudo";
+    if (g === 90) return "recto";
+    if (g < 180) return "obtuso";
+    return "llano";
+  }
+
+  /**
+   * Filtra el catálogo según búsqueda y filtros. La búsqueda ignora mayúsculas
+   * y tildes y mira el título, la descripción, el tema y las etiquetas.
+   */
+  function normalizar(t) {
+    return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+  function filtrarCatalogo(recursos, f) {
+    f = f || {};
+    var q = normalizar(f.texto).trim();
+    return recursos.filter(function (r) {
+      if (f.tema && r.tema !== f.tema) return false;
+      if (f.tipo && r.tipo !== f.tipo) return false;
+      if (f.nivel && r.nivel !== f.nivel) return false;
+      if (!q) return true;
+      var pajar = normalizar([r.titulo, r.descripcion, r.tema].concat(r.etiquetas || []).join(" "));
+      return q.split(/\s+/).every(function (p) { return pajar.indexOf(p) !== -1; });
+    });
+  }
+
+  var api = {
+    entero: entero, mezclar: mezclar,
+    generarMultiplicacion: generarMultiplicacion,
+    compararFracciones: compararFracciones,
+    puntajeAngulo: puntajeAngulo, tipoAngulo: tipoAngulo,
+    segundosRival: segundosRival, avanceJugador: avanceJugador,
+    mcd: mcd, simplificar: simplificar, generarPedido: generarPedido, pedidoCorrecto: pedidoCorrecto,
+    anguloDesde: anguloDesde, generarLinternas: generarLinternas, linternaAlcanzada: linternaAlcanzada,
+    estrellas: estrellas,
+    normalizar: normalizar, filtrarCatalogo: filtrarCatalogo
+  };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  else raiz.MathLogica = api;
+})(typeof window !== "undefined" ? window : this);
+
+</script>
+<script>
+/*
+  kit.js: piezas compartidas por los juegos de MathStore.
+  - MathKit.sonido: efectos generados en el navegador (sin archivos de audio).
+  - MathKit.intro(): pantalla de inicio con instrucciones y botón "Empezar".
+  - MathKit.flotante(): texto que sube y se desvanece ("+10", "¡Combo!").
+  - MathKit.confeti(): lluvia breve de papelitos al ganar.
+  - MathKit.corazones(n, max): vidas como texto (♥♥♡).
+*/
+(function () {
+  "use strict";
+  var reducido = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Sonido ---------- */
+  var ac = null;
+  function leerPref() { try { return localStorage.getItem("mathstore-sonido") !== "no"; } catch (e) { return true; } }
+  var sonido = {
+    on: leerPref(),
+    alternar: function () {
+      sonido.on = !sonido.on;
+      try { localStorage.setItem("mathstore-sonido", sonido.on ? "si" : "no"); } catch (e) { /* sin almacenamiento */ }
+      return sonido.on;
+    },
+    /** Un tono simple: frecuencia (Hz), duración (s), forma de onda, volumen y retraso (s). */
+    tono: function (f, d, tipo, vol, delay) {
+      if (!sonido.on) return;
+      try {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        if (ac.state === "suspended") ac.resume();
+        var t = ac.currentTime + (delay || 0), o = ac.createOscillator(), g = ac.createGain();
+        o.type = tipo || "sine"; o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol || 0.12, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g).connect(ac.destination); o.start(t); o.stop(t + d + 0.05);
+      } catch (e) { /* audio no disponible */ }
+    },
+    acierto: function () { sonido.tono(660, 0.12, "triangle"); sonido.tono(990, 0.16, "triangle", 0.1, 0.07); },
+    error: function () { sonido.tono(180, 0.28, "sawtooth", 0.06); },
+    toque: function () { sonido.tono(520, 0.05, "square", 0.04); },
+    combo: function () { [660, 880, 1100].forEach(function (f, i) { sonido.tono(f, 0.1, "square", 0.05, i * 0.05); }); },
+    nivel: function () { [523, 659, 784, 1046].forEach(function (f, i) { sonido.tono(f, 0.18, "triangle", 0.1, i * 0.1); }); },
+    perder: function () { [392, 330, 262].forEach(function (f, i) { sonido.tono(f, 0.25, "triangle", 0.09, i * 0.16); }); }
+  };
+
+  /* ---------- Pantalla de inicio ---------- */
+  /**
+   * opciones: { titulo, subtitulo, pasos: [texto], extra: html opcional (p. ej. selector de tablas),
+   *             boton: "Empezar", autor: "Nombre" (se muestra como «Creado por»), alEmpezar: function(raiz) }
+   */
+  function intro(contenedor, o) {
+    contenedor.innerHTML =
+      '<div class="juego-intro">' +
+        '<h3>' + o.titulo + '</h3>' +
+        (o.subtitulo ? '<p class="juego-intro-sub">' + o.subtitulo + '</p>' : '') +
+        '<ol class="juego-pasos">' + o.pasos.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ol>' +
+        (o.extra || '') +
+        '<button type="button" class="boton boton-principal boton-grande" data-empezar>' + (o.boton || 'Empezar') + '</button>' +
+        (o.autor ? '<p class="juego-creditos">Creado por <b>' + o.autor + '</b></p>' : '') +
+      '</div>';
+    contenedor.querySelector('[data-empezar]').addEventListener('click', function () { o.alEmpezar(contenedor); });
+  }
+
+  /* ---------- Texto flotante ---------- */
+  function flotante(contenedor, texto, x, y, clase) {
+    var s = document.createElement('span');
+    s.className = 'flotante ' + (clase || '');
+    s.textContent = texto;
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    contenedor.appendChild(s);
+    setTimeout(function () { s.remove(); }, 900);
+  }
+
+  /* ---------- Confeti ---------- */
+  var COLORES = ['#f2cf5b', '#8fdc9e', '#7cc4e8', '#ef8f9c', '#e9efe9'];
+  function confeti(contenedor) {
+    if (reducido) return;
+    for (var i = 0; i < 36; i++) {
+      var p = document.createElement('i');
+      p.className = 'confeti';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.background = COLORES[i % COLORES.length];
+      p.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
+      p.style.setProperty('--giro', (Math.random() * 720 - 360) + 'deg');
+      p.style.animationDelay = (Math.random() * 0.25) + 's';
+      contenedor.appendChild(p);
+      (function (el) { setTimeout(function () { el.remove(); }, 1600); })(p);
+    }
+  }
+
+  function corazones(n, max) { var s = ''; for (var i = 0; i < max; i++) s += i < n ? '♥' : '♡'; return s; }
+
+  window.MathKit = { sonido: sonido, intro: intro, flotante: flotante, confeti: confeti, corazones: corazones, reducido: reducido };
+})();
+
+</script>
+<script>
+/*
+  Pizzería de Fracciones
+  Creado por Antony Arias Valle para MathStore.
+  Llegan clientes que piden una fracción de pizza ("Quiero 3/4"). La pizza ya está cortada:
+  toca las porciones para servirlas y presiona "Servir".
+  - Nivel 1: la pizza está cortada igual que el pedido (3/4 → pizza en 4).
+  - Nivel 2: la pizza está cortada en más partes (1/2 → pizza en 6): fracciones equivalentes.
+  - Nivel 3: pedidos sin simplificar y pizza en menos partes (6/8 → pizza en 4).
+  - 4 clientes por nivel; cada uno tiene una barra de paciencia. Propina según lo rápido que sirvas.
+  - 3 vidas (estrellas de reputación): un pedido mal servido o un cliente que se va resta una.
+  Mismo contrato que el resto de juegos (ver carrera-tablas.js).
+*/
+(function () {
+  "use strict";
+  var L = window.MathLogica, K = window.MathKit;
+  window.MathJuegos = window.MathJuegos || {};
+
+  var CLIENTES_POR_NIVEL = 4;
+  var PACIENCIA = [0, 30, 28, 26]; // segundos por cliente en cada nivel
+  var PIELES = ["#f1c7a5", "#d9a07a", "#a86f4c", "#7a4a2e", "#f6d7bd"];
+  var PELOS = ["#2b1d14", "#6b3e1f", "#d8a24a", "#b2452f", "#3a3a3a", "#7c5cbf"];
+  var NOMBRES = ["Sofía", "Mateo", "Valentina", "Diego", "Camila", "Lucas", "Isabella", "Tomás", "Mariana", "Samuel", "Daniela", "Emilio"];
+
+  /** Cara del cliente: humor = "normal" | "feliz" | "enojado". */
+  function cara(c, humor) {
+    var boca = humor === "feliz" ? '<path d="M38 66q12 12 24 0" stroke="#3b1f12" stroke-width="4" fill="none" stroke-linecap="round"/>'
+      : humor === "enojado" ? '<path d="M38 72q12-10 24 0" stroke="#3b1f12" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M32 40l12 5M68 40l-12 5" stroke="#3b1f12" stroke-width="4" stroke-linecap="round"/>'
+      : '<path d="M40 68h20" stroke="#3b1f12" stroke-width="4" stroke-linecap="round"/>';
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+      '<circle cx="50" cy="56" r="34" fill="' + c.piel + '"/>' +
+      '<path d="M16 50c0-26 16-36 34-36s34 10 34 36c-8-10-20-14-34-14s-26 4-34 14z" fill="' + c.pelo + '"/>' +
+      '<circle cx="38" cy="52" r="4.5" fill="#3b1f12"/><circle cx="62" cy="52" r="4.5" fill="#3b1f12"/>' +
+      (humor === "feliz" ? '<circle cx="30" cy="64" r="5" fill="#ef8f9c" opacity=".6"/><circle cx="70" cy="64" r="5" fill="#ef8f9c" opacity=".6"/>' : '') +
+      boca + '</svg>';
+  }
+
+  /** Pizza dibujada como porciones (cuñas) que se pueden tocar. */
+  function pizza(porciones) {
+    var s = '<svg class="pizza" viewBox="-110 -110 220 220" role="group" aria-label="Pizza cortada en ' + porciones + ' porciones">';
+    s += '<circle r="106" fill="var(--tabla)"/><circle r="106" fill="none" stroke="var(--tabla-borde)" stroke-width="4"/>';
+    for (var i = 0; i < porciones; i++) {
+      var a0 = (i / porciones) * Math.PI * 2 - Math.PI / 2, a1 = ((i + 1) / porciones) * Math.PI * 2 - Math.PI / 2;
+      var cuña = function (r) {
+        return "M0 0L" + (Math.cos(a0) * r).toFixed(2) + " " + (Math.sin(a0) * r).toFixed(2) +
+          "A" + r + " " + r + " 0 " + (a1 - a0 > Math.PI ? 1 : 0) + " 1 " + (Math.cos(a1) * r).toFixed(2) + " " + (Math.sin(a1) * r).toFixed(2) + "Z";
+      };
+      var am = (a0 + a1) / 2;
+      // pepperoni: 1 o 2 por porción según su tamaño
+      var pep = '<circle cx="' + (Math.cos(am) * 56).toFixed(1) + '" cy="' + (Math.sin(am) * 56).toFixed(1) + '" r="' + (porciones > 8 ? 7 : 9) + '" fill="#b8322e"/>';
+      if (porciones <= 4) pep += '<circle cx="' + (Math.cos(am + 0.35) * 30).toFixed(1) + '" cy="' + (Math.sin(am + 0.35) * 30).toFixed(1) + '" r="7" fill="#b8322e"/>';
+      var dx = (Math.cos(am) * 4).toFixed(2), dy = (Math.sin(am) * 4).toFixed(2);
+      s += '<g class="porcion" data-i="' + i + '" tabindex="0" role="button" aria-pressed="false" aria-label="Porción ' + (i + 1) + '" style="--dx:' + dx + 'px;--dy:' + dy + 'px">' +
+        '<path class="hueco" d="' + cuña(96) + '"/>' +
+        '<g class="rebanada"><path d="' + cuña(96) + '" fill="#d9a35b"/><path d="' + cuña(84) + '" fill="#f5c84c"/>' + pep + '</g>' +
+        '</g>';
+    }
+    return s + '</svg>';
+  }
+
+  function fraccionHTML(n, d) { return '<span class="frac"><span>' + n + '</span><span>' + d + '</span></span>'; }
+
+  window.MathJuegos["pizzeria-fracciones"] = function (ctx) {
+    var est = null, intervalo = 0, timeouts = [];
+    function despues(ms, fn) { timeouts.push(setTimeout(fn, ms)); }
+    function limpiar() { clearInterval(intervalo); timeouts.forEach(clearTimeout); timeouts = []; }
+
+    function marcador() {
+      ctx.marcador({ Nivel: est.nivel + "/3", Cliente: Math.min(est.cliente + 1, CLIENTES_POR_NIVEL) + "/" + CLIENTES_POR_NIVEL, Monedas: est.puntos, Reputación: K.corazones(est.vidas, 3) });
+    }
+
+    function inicio() {
+      K.intro(ctx.escenario, {
+        titulo: "Pizzería de Fracciones",
+        subtitulo: "Sirve justo la fracción de pizza que te piden.",
+        pasos: [
+          "Lee el pedido del cliente, por ejemplo <b>3/4</b> de pizza.",
+          "Toca las porciones para servirlas y presiona <b>Servir</b>.",
+          "En el nivel 2 la pizza viene cortada en más partes, y en el nivel 3 en menos. Piensa en fracciones equivalentes.",
+          "Si tardas demasiado, el cliente se va. Sirve rápido para ganar propina."
+        ],
+        boton: "Abrir la pizzería",
+        autor: "Antony Arias Valle",
+        alEmpezar: function () { est = { nivel: 1, cliente: 0, puntos: 0, vidas: 3, bien: 0, total: 0, nivelesOk: 0, fallosNivel: 0 }; montar(); nuevoCliente(); }
+      });
+      ctx.marcador({});
+    }
+
+    function montar() {
+      ctx.escenario.innerHTML =
+        '<div class="pizzeria">' +
+          '<div class="mostrador">' +
+            '<div class="cliente">' +
+              '<div class="cliente-cara"></div>' +
+              '<div class="globo"><span class="cliente-nombre"></span><div class="pedido"></div><div class="paciencia" aria-hidden="true"><i></i></div></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="cocina">' +
+            '<div class="pizza-caja"></div>' +
+            '<p class="conteo" aria-live="polite"></p>' +
+            '<p class="explicacion" aria-live="polite"></p>' +
+            '<div class="acciones-pizza">' +
+              '<button type="button" class="boton boton-secundario" data-vaciar>Vaciar</button>' +
+              '<button type="button" class="boton boton-principal" data-servir>Servir</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      var raiz = ctx.escenario.querySelector(".pizzeria");
+      raiz.addEventListener("click", function (e) {
+        var p = e.target.closest(".porcion");
+        if (p) return alternar(p);
+        if (e.target.closest("[data-servir]")) return servir();
+        if (e.target.closest("[data-vaciar]")) return vaciar();
+      });
+      raiz.addEventListener("keydown", function (e) {
+        var p = e.target.closest(".porcion");
+        if (p && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); alternar(p); }
+      });
+    }
+
+    function q(s) { return ctx.escenario.querySelector(s); }
+
+    function nuevoCliente() {
+      var c = {
+        piel: PIELES[L.entero(0, PIELES.length - 1)], pelo: PELOS[L.entero(0, PELOS.length - 1)],
+        nombre: NOMBRES[L.entero(0, NOMBRES.length - 1)], pedido: L.generarPedido(est.nivel)
+      };
+      est.c = c; est.elegidas = 0; est.atendiendo = true;
+      est.limite = PACIENCIA[est.nivel]; est.inicio = performance.now();
+      q(".cliente-cara").innerHTML = cara(c, "normal");
+      q(".cliente-nombre").textContent = c.nombre + " pide:";
+      q(".pedido").innerHTML = fraccionHTML(c.pedido.num, c.pedido.den) + '<span class="pedido-texto">de pizza</span>';
+      q(".pizza-caja").innerHTML = pizza(c.pedido.porciones);
+      q(".explicacion").textContent = "";
+      q(".explicacion").className = "explicacion";
+      var cli = q(".cliente"); cli.classList.remove("llega", "se-va"); void cli.offsetWidth; cli.classList.add("llega");
+      q("[data-servir]").disabled = false; q("[data-vaciar]").disabled = false;
+      actualizarConteo(); marcador();
+      clearInterval(intervalo);
+      intervalo = setInterval(tic, 100);
+      tic();
+    }
+
+    function tic() {
+      if (!est.atendiendo) return;
+      var queda = Math.max(0, 1 - (performance.now() - est.inicio) / 1000 / est.limite);
+      var barra = q(".paciencia i");
+      barra.style.transform = "scaleX(" + queda + ")";
+      barra.classList.toggle("poca", queda < 0.3);
+      if (queda <= 0) resolver(false, true);
+    }
+
+    function actualizarConteo() {
+      q(".conteo").textContent = "Porciones servidas: " + est.elegidas + " de " + est.c.pedido.porciones;
+    }
+
+    function alternar(p) {
+      if (!est.atendiendo) return;
+      var puesta = p.getAttribute("aria-pressed") !== "true";
+      p.setAttribute("aria-pressed", puesta);
+      p.classList.toggle("puesta", puesta);
+      est.elegidas += puesta ? 1 : -1;
+      K.sonido.tono(puesta ? 600 + est.elegidas * 40 : 400, 0.06, "triangle", 0.06);
+      actualizarConteo();
+    }
+
+    function vaciar() {
+      if (!est.atendiendo) return;
+      ctx.escenario.querySelectorAll(".porcion").forEach(function (p) { p.classList.remove("puesta"); p.setAttribute("aria-pressed", "false"); });
+      est.elegidas = 0; actualizarConteo();
+    }
+
+    function servir() {
+      if (!est.atendiendo) return;
+      resolver(L.pedidoCorrecto(est.elegidas, est.c.pedido.porciones, est.c.pedido.num, est.c.pedido.den), false);
+    }
+
+    function resolver(ok, seAburrio) {
+      est.atendiendo = false; clearInterval(intervalo);
+      q("[data-servir]").disabled = true; q("[data-vaciar]").disabled = true;
+      var p = est.c.pedido, exp = q(".explicacion"), caja = q(".pizzeria");
+      est.total++;
+      var equivalente = p.num + "/" + p.den + " de pizza = " + p.necesarias + " de " + p.porciones + " porciones";
+      if (ok) {
+        var queda = Math.max(0, 1 - (performance.now() - est.inicio) / 1000 / est.limite);
+        var propina = Math.round(queda * 10);
+        est.puntos += 10 + propina; est.bien++;
+        q(".cliente-cara").innerHTML = cara(est.c, "feliz");
+        exp.textContent = "¡Perfecto! " + equivalente + "." + (propina ? " Propina: " + propina + " monedas." : "");
+        exp.classList.add("bien");
+        K.sonido.acierto();
+        K.flotante(caja, "+" + (10 + propina), caja.clientWidth * 0.3, 40, "bien");
+      } else {
+        est.vidas--; est.fallosNivel++;
+        q(".cliente-cara").innerHTML = cara(est.c, "enojado");
+        exp.textContent = (seAburrio ? "Se cansó de esperar. " : "Ese pedido no era. Serviste " + est.elegidas + " porciones. ") + "Era: " + equivalente + ".";
+        exp.classList.add("mal");
+        K.sonido.error();
+        caja.classList.remove("temblor"); void caja.offsetWidth; caja.classList.add("temblor");
+      }
+      marcador();
+      despues(ok ? 1500 : 2600, siguiente);
+    }
+
+    function siguiente() {
+      if (est.vidas <= 0) return fin();
+      q(".cliente").classList.add("se-va");
+      est.cliente++;
+      if (est.cliente < CLIENTES_POR_NIVEL) return despues(260, nuevoCliente);
+      // nivel terminado
+      est.nivelesOk++;
+      if (est.nivel >= 3) return fin();
+      K.sonido.nivel(); K.confeti(ctx.escenario);
+      var aviso = document.createElement("div");
+      aviso.className = "aviso-nivel";
+      aviso.innerHTML = "<h3>¡Nivel " + est.nivel + " completado!</h3><p>" +
+        (est.nivel === 1 ? "Ahora la pizza viene cortada en más porciones: busca la fracción equivalente."
+                         : "Último nivel: los pedidos vienen sin simplificar y la pizza en menos porciones.") + "</p>";
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "boton boton-principal"; b.textContent = "Siguiente nivel";
+      b.addEventListener("click", function () { aviso.remove(); est.nivel++; est.cliente = 0; est.fallosNivel = 0; nuevoCliente(); });
+      aviso.appendChild(b);
+      q(".pizzeria").appendChild(aviso);
+      b.focus();
+    }
+
+    function fin() {
+      limpiar();
+      ctx.terminar(est.puntos,
+        "Atendiste bien a " + est.bien + " de " + est.total + " clientes y completaste " + est.nivelesOk + " de 3 niveles.",
+        L.estrellas(est.nivelesOk));
+    }
+
+    inicio();
+    return limpiar;
+  };
+})();
+
+</script>
+<script>
+
+(function () {
+  "use strict";
+  var ID = "pizzeria-fracciones";
+  var escenario = document.getElementById("escenario"), marcador = document.getElementById("marcador");
+  var botonSonido = document.getElementById("boton-sonido"), limpiar = null;
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function leerRecord() { try { return +localStorage.getItem("mathstore-record-" + ID) || 0; } catch (e) { return 0; } }
+  function guardarRecord(p) { try { localStorage.setItem("mathstore-record-" + ID, p); } catch (e) { /* sin almacenamiento */ } }
+  function pintarSonido() { var on = MathKit.sonido.on; botonSonido.setAttribute("aria-pressed", on); botonSonido.textContent = "Sonido: " + (on ? "sí" : "no"); }
+  botonSonido.addEventListener("click", function () { MathKit.sonido.alternar(); pintarSonido(); });
+  pintarSonido();
+
+  function iniciar() {
+    if (limpiar) limpiar();
+    limpiar = MathJuegos[ID]({
+      escenario: escenario,
+      marcador: function (obj) {
+        marcador.innerHTML = Object.keys(obj).map(function (k) { return "<span>" + esc(k) + " <b>" + esc(obj[k]) + "</b></span>"; }).join("");
+      },
+      terminar: function (puntos, resumen, estrellas) {
+        if (limpiar) { limpiar(); limpiar = null; }
+        var anterior = leerRecord(), nuevo = puntos > anterior;
+        if (nuevo) guardarRecord(puntos);
+        estrellas = Math.max(0, Math.min(3, estrellas || 0));
+        marcador.innerHTML = "";
+        escenario.innerHTML =
+          '<div class="resultado">' +
+            '<p class="estrellas-fin" aria-label="' + estrellas + ' de 3 estrellas">' +
+              [0, 1, 2].map(function (i) { return '<span class="' + (i < estrellas ? "llena" : "") + '" style="--i:' + i + '">★</span>'; }).join("") +
+            "</p>" +
+            "<h3>" + (nuevo ? "¡Nuevo récord!" : estrellas === 3 ? "¡Perfecto!" : "¡Buen intento!") + "</h3>" +
+            '<p class="puntos-fin">' + puntos + " <span>puntos</span></p>" +
+            "<p>" + esc(resumen) + (anterior && !nuevo ? " Tu récord es " + anterior + "." : "") + "</p>" +
+            '<button type="button" class="boton boton-principal boton-grande" id="otra-vez">Jugar otra vez</button>' +
+          "</div>";
+        document.getElementById("otra-vez").addEventListener("click", iniciar);
+        if (estrellas === 3) MathKit.confeti(escenario);
+      }
+    });
+  }
+  iniciar();
+})();
+</script>
+</body>
+</html>

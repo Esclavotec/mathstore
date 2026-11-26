@@ -45,7 +45,7 @@
   /* ---------- Pantalla de inicio ---------- */
   /**
    * opciones: { titulo, subtitulo, pasos: [texto], extra: html opcional (p. ej. selector de tablas),
-   *             boton: "Empezar", alEmpezar: function(raiz) }
+   *             boton: "Empezar", autor: "Nombre" (se muestra como «Creado por»), alEmpezar: function(raiz) }
    */
   function intro(contenedor, o) {
     contenedor.innerHTML =
@@ -55,6 +55,7 @@
         '<ol class="juego-pasos">' + o.pasos.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ol>' +
         (o.extra || '') +
         '<button type="button" class="boton boton-principal boton-grande" data-empezar>' + (o.boton || 'Empezar') + '</button>' +
+        (o.autor ? '<p class="juego-creditos">Creado por <b>' + o.autor + '</b></p>' : '') +
       '</div>';
     contenedor.querySelector('[data-empezar]').addEventListener('click', function () { o.alEmpezar(contenedor); });
   }
